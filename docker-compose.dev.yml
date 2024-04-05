@@ -3,8 +3,8 @@ services:
   postgres:
     image: postgres
     restart: unless-stopped
-    expose:
-      - 5432
+    ports:
+      - 5432:5432
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: wkBsT1WyPxAEAzS9
@@ -26,6 +26,22 @@ services:
       POSTGRES_PASS: wkBsT1WyPxAEAzS9
     volumes:
       - ./backend/src:/app/src
+    depends_on:
+      - postgres
+    networks:
+      - mingeso-monolothic
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    environment:
+      BACKEND_URI: http://backend:8080/
+    volumes:
+      - ./frontend/public:/app/public
+      - ./frontend/src:/app/src
     depends_on:
       - postgres
     networks:
