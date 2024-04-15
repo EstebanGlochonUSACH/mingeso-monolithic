@@ -45,6 +45,14 @@ public class Reparacion
 	@Column(nullable = true)
 	private Integer monto;
 
+	public Orden getOrden() {
+		return orden;
+	}
+
+	public void setOrden(Orden orden) {
+		this.orden = orden;
+	}
+
 	public Tipo getTipo(){
 		return tipo;
 	}

@@ -50,6 +50,14 @@ public class Orden
 		return monto;
 	}
 
+	public Auto getAuto() {
+		return auto;
+	}
+
+	public void setAuto(Auto auto) {
+		this.auto = auto;
+	}
+
 	public Bono getBono() {
 		return bono;
 	}
