@@ -24,6 +24,8 @@ public class ReparacionService
 		return reparacionRepository.findById(id).orElse(null);
 	}
 
+	// TODO: hay ciertas reparaciones que no son validas para cierto tipo de autos (MontoReparacionConfig = 0)!
+
 	public Reparacion createReparacion(Reparacion reparacion) {
 		return reparacionRepository.save(reparacion);
 	}

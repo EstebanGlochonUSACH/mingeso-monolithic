@@ -37,15 +37,22 @@ public class OrdenController
 	}
 
 	@PostMapping("/create")
-	public ResponseEntity<Orden> createOrden(@RequestBody Orden orden) {
-		Orden createdOrden = ordenService.createOrden(orden);
-		return ResponseEntity.status(HttpStatus.CREATED).body(createdOrden);
+	public ResponseEntity<ResponseObject<Orden>> createOrden(@RequestBody Orden orden) {
+		try{
+			Orden createdOrden = ordenService.createOrden(orden);
+			ResponseObject<Orden> response = new ResponseObject<Orden>(null, createdOrden);
+			return ResponseEntity.status(HttpStatus.CREATED).body(response);
+		}
+		catch(Exception err){
+			ResponseObject<Orden> response = new ResponseObject<Orden>(err.getMessage(), null);
+			return ResponseEntity.badRequest().body(response);
+		}
 	}
 
 	@PutMapping("/{id}/update")
 	public ResponseEntity<ResponseObject<Orden>> updateOrden(@PathVariable Long id, @RequestBody Orden updatedOrden) {
 		try{
-			Orden updatedEntity = ordenService.updateOrden(id, updatedOrden);
+			Orden updatedEntity = ordenService.updateOrden(updatedOrden);
 			if (updatedEntity != null) {
 				ResponseObject<Orden> response = new ResponseObject<Orden>(null, updatedEntity);
 				return ResponseEntity.ok(response);

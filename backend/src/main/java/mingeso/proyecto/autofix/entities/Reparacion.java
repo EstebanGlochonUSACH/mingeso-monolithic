@@ -2,7 +2,6 @@ package mingeso.proyecto.autofix.entities;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -42,8 +41,15 @@ public class Reparacion
 	@JsonDeserialize(using = StringToEnumDeserializer.class)
 	private Tipo tipo;
 
-	@Column(nullable = true)
 	private Integer monto;
+
+	public Reparacion() {}
+
+	public Reparacion(Orden orden, Tipo tipo, Integer monto){
+		this.orden = orden;
+		this.tipo = tipo;
+		this.monto = monto;
+	}
 
 	public Orden getOrden() {
 		return orden;

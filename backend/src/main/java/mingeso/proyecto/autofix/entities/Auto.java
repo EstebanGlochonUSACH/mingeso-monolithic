@@ -23,6 +23,7 @@ public class Auto
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id_auto;
 
+	@Column(unique = true)
 	private String patente;
 
 	@ManyToOne(fetch = FetchType.EAGER)
@@ -46,9 +47,12 @@ public class Auto
 	@Column(nullable = false, columnDefinition = "INTEGER DEFAULT 0")
 	private Integer kilometraje;
 
+	public Auto() {}
+
 	public Auto(String patente, Marca marca, String modelo, Tipo tipo, Integer anio, Motor motor, Integer asientos) {
 		this.patente = patente;
 		this.marca = marca;
+		this.modelo = modelo;
 		this.tipo = tipo;
 		this.anio = anio;
 		this.motor = motor;
@@ -59,6 +63,7 @@ public class Auto
 	public Auto(String patente, Marca marca, String modelo, Tipo tipo, Integer anio, Motor motor, Integer asientos, Integer kilometraje) {
 		this.patente = patente;
 		this.marca = marca;
+		this.modelo = modelo;
 		this.tipo = tipo;
 		this.anio = anio;
 		this.motor = motor;

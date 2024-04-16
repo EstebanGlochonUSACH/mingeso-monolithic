@@ -9,4 +9,5 @@ import mingeso.proyecto.autofix.entities.Auto;
 public interface AutoRepository extends JpaRepository<Auto, Long>
 {
 	public Optional<Auto> findByPatente(String patente);
+	public Boolean existsByPatente(String patente);
 }

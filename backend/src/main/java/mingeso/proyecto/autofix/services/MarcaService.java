@@ -25,9 +25,21 @@ public class MarcaService
 		return marcaRepository.findById(id).orElse(null);
 	}
 
+	public Marca getMarcaByNombre(String nombre) {
+		return marcaRepository.findByNombre(nombre).orElse(null);
+	}
+
 	public Marca createMarca(String nombre) {
 		Marca marca = new Marca(nombre);
 		return marcaRepository.save(marca);
+	}
+
+	public Marca getOrCreateMarca(String nombre){
+		Marca marca = getMarcaByNombre(nombre);
+		if(marca == null){
+			return createMarca(nombre);
+		}
+		return marca;
 	}
 
 	public Marca updateMarca(Long id, String nombre) {

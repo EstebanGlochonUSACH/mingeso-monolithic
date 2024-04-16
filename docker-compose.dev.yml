@@ -23,6 +23,7 @@ services:
       - 8080:8080
     environment:
       TZ: America/Santiago
+      SEEDER_ENABLED: "false"
       POSTGRES_URL: jdbc:postgresql://postgres:5432/autofix
       POSTGRES_USER: postgres
       POSTGRES_PASS: wkBsT1WyPxAEAzS9

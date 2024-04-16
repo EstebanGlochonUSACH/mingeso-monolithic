@@ -28,6 +28,10 @@ public class AutoService
 		return autoRepository.findByPatente(patente).orElse(null);
 	}
 
+	public Boolean existsByPatente(String patente) {
+		return autoRepository.existsByPatente(patente);
+	}
+
 	public Auto saveAuto(Auto auto) {
 		return autoRepository.save(auto);
 	}

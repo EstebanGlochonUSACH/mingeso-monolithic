@@ -39,7 +39,7 @@ public class MontoReparacionConfig {
 		reparacionMontoMapDiesel.put(Reparacion.Tipo.AIRE_ACONDICIONADO, 150_000);
 		reparacionMontoMapDiesel.put(Reparacion.Tipo.COMBUSTIBLE, 140_000);
 		reparacionMontoMapDiesel.put(Reparacion.Tipo.PARABRISAS, 80_000);
-		MONTOS.put(Auto.Motor.GASOLINA, reparacionMontoMapDiesel);
+		MONTOS.put(Auto.Motor.DIESEL, reparacionMontoMapDiesel);
 
 		// Para auto tipo HIBRIDO:
 		Map<Reparacion.Tipo, Integer> reparacionMontoMapHibrido = new HashMap<>();
@@ -72,11 +72,11 @@ public class MontoReparacionConfig {
 		MONTOS.put(Auto.Motor.ELECTRICO, reparacionMontoMapElectrico);
 	}
 
-	public static Integer getMonto(Auto.Motor tipoMotor, Reparacion.Tipo tipoReparacion) {
+	public static Integer getMonto(Auto.Motor tipoMotor, Reparacion.Tipo tipoReparacion) throws Exception {
 		Map<Reparacion.Tipo, Integer> reparacionMontoMap = MONTOS.get(tipoMotor);
 		if (reparacionMontoMap != null) {
 			return reparacionMontoMap.get(tipoReparacion);
 		}
-		return null;
+		throw new Exception(String.format("No se pudo obtener el descuento (tipoMotor=%s, tipoReparacion=%s)", tipoMotor.name(), tipoReparacion.name()));
 	}
 }

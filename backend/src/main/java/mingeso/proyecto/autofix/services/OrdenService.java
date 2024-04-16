@@ -33,39 +33,65 @@ public class OrdenService
 		return ordenRepository.findById(id).orElse(null);
 	}
 
-	public Orden createOrden(Orden orden) {
-        LocalDateTime now = LocalDateTime.now();
+	@Transactional
+	public Orden createOrden(Orden orden) throws Exception {
+		LocalDateTime now = LocalDateTime.now();
 
 		DayOfWeek dayOfWeek = now.getDayOfWeek();
-        boolean isMondayOrThursday = (dayOfWeek == DayOfWeek.MONDAY || dayOfWeek == DayOfWeek.THURSDAY);
+		boolean isMondayOrThursday = (dayOfWeek == DayOfWeek.MONDAY || dayOfWeek == DayOfWeek.THURSDAY);
 
 		LocalTime time = now.toLocalTime();
-        boolean isBetween9And12 = time.isAfter(LocalTime.of(9, 0)) && time.isBefore(LocalTime.of(12, 0));
+		boolean isBetween9And12 = time.isAfter(LocalTime.of(9, 0)) && time.isBefore(LocalTime.of(12, 0));
 
 		orden.setDescuentoDiaAtencion(isMondayOrThursday && isBetween9And12);
+
+		Auto auto = orden.getAuto();
+		Bono bono = orden.getBono();
+		if(bono != null){
+			if(!bono.getMarca().equals(auto.getMarca())){
+				throw new Exception("No se puede registrar un bono de una Marca distinta a la del auto!");
+			}
+			else if(bono.getUsado()){
+				throw new Exception("No se puede registrar un bono que ya fue canjeado!");
+			}
+			else{
+				bono.setUsado(true);
+				bonoRepository.save(bono);
+				orden.setBono(bono);
+			}
+		}
 
 		return ordenRepository.save(orden);
 	}
 
 	@Transactional
-	public Orden updateOrden(Long id, Orden updatedOrden) throws Exception {
-		Orden existingOrden = ordenRepository.findById(id).orElse(null);
+	public Orden updateOrden(Orden updatedOrden) throws Exception {
+		Orden existingOrden = ordenRepository.findById(updatedOrden.getId()).orElse(null);
 		if (existingOrden != null) {
 			// Validar que el bono no este usado y que la orden no tenga bono
 			Auto auto = existingOrden.getAuto();
 			Bono bono = updatedOrden.getBono();
 
-			if(bono.getMarca().getId() != auto.getMarca().getId()){
-				throw new Exception("No se puede registrar un bono de una Marca distinta a la del auto!");
+			if(bono != null){
+				if(!bono.getMarca().equals(auto.getMarca())){
+					throw new Exception("No se puede registrar un bono de una Marca distinta a la del auto!");
+				}
+				else if(existingOrden.getBono() == null){
+					if(bono.getUsado()){
+						throw new Exception("No se puede registrar un bono que ya fue canjeado!");
+					}
+					bono.setUsado(true);
+					bonoRepository.save(bono);
+					existingOrden.setBono(bono);
+				}
 			}
 
-			if(bono != null && bono.getUsado() == false && existingOrden.getBono() == null){
-				bono.setUsado(true);
-				bonoRepository.save(bono);
-				existingOrden.setBono(bono);
-			}
+			existingOrden.setMontoReparaciones(updatedOrden.getMontoReparaciones());
 
-			existingOrden.setMonto(updatedOrden.getMonto());
+			existingOrden.setDescuentoReparaciones(updatedOrden.getDescuentoReparaciones());
+			existingOrden.setRecargaAntiguedad(updatedOrden.getRecargaAntiguedad());
+			existingOrden.setRecargaKilometraje(updatedOrden.getRecargaKilometraje());
+
 			existingOrden.setFechaIngreso(updatedOrden.getFechaIngreso());
 			existingOrden.setFechaSalida(updatedOrden.getFechaSalida());
 			existingOrden.setFechaEntrega(updatedOrden.getFechaEntrega());

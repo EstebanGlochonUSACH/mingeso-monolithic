@@ -7,8 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RecargoAntiguedadConfig {
-
+public class RecargoAntiguedadConfig
+{
 	private static final Map<Auto.Tipo, List<Double>> RECARGOS = new HashMap<>();
 
 	static {
@@ -53,7 +53,7 @@ public class RecargoAntiguedadConfig {
 		RECARGOS.put(Auto.Tipo.FURGONETA, listFurgoneta);
 	}
 
-	public static Double getRecargo(Auto.Tipo tipoAuto, Integer anio) {
+	public static Double getRecargo(Auto.Tipo tipoAuto, Integer anio) throws Exception {
 		List<Double> recargos = RECARGOS.get(tipoAuto);
 		if (recargos != null) {
 			if(anio < 6){
@@ -67,6 +67,6 @@ public class RecargoAntiguedadConfig {
 			}
 			return recargos.get(3);
 		}
-		return null;
+		throw new Exception(String.format("No se pudo obtener la recarga (tipoAuto=%s, año=%s)", tipoAuto.name(), anio.toString()));
 	}
 }

@@ -36,12 +36,18 @@ public class Bono
 
 	private Boolean usado;
 
+	public Bono() {}
+
 	public Bono(Marca marca, Integer monto, LocalDateTime fechaInicio, LocalDateTime fechaTermino){
 		this.marca = marca;
 		this.monto = monto;
 		this.usado = false;
 		this.fechaInicio = fechaInicio;
 		this.fechaTermino = fechaTermino;
+	}
+
+	public Long getId(){
+		return id_bono;
 	}
 
 	public Marca getMarca(){

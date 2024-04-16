@@ -29,10 +29,23 @@ public class Orden
 	@JoinColumn(name = "id_bono", nullable = true)
 	public Bono bono;
 
-	@Column(nullable = true)
-	private Integer monto;
+	@Column(name = "monto_reparaciones", nullable = true)
+	private Long montoReparaciones;
 
-	private Boolean descuento_dia_atencion;
+	@Column(name = "descuento_dia_atencion")
+	private Boolean descuentoDiaAtencion;
+
+	@Column(name = "descuento_reparaciones", nullable = true)
+	private Long descuentoReparaciones;
+
+	@Column(name = "recarga_antiguedad", nullable = true)
+	private Long recargaAntiguedad;
+
+	@Column(name = "recarga_kilometraje", nullable = true)
+	private Long recargaKilometraje;
+
+	@Column(name = "recarga_atraso", nullable = true)
+	private Long recargaAtraso;
 
 	@Column(name = "fecha_ingreso")
 	private LocalDateTime fechaIngreso;
@@ -46,8 +59,24 @@ public class Orden
 	@OneToMany(mappedBy = "orden", fetch = FetchType.LAZY)
 	private List<Reparacion> reparaciones = new ArrayList<Reparacion>();
 
-	public Integer getMonto(){
-		return monto;
+	public Orden() {}
+
+	public Orden(Auto auto, LocalDateTime fechaIngreso){
+		this.auto = auto;
+		this.fechaIngreso = fechaIngreso;
+		this.descuentoDiaAtencion = false;
+	}
+
+	public Long getId(){
+		return id_orden;
+	}
+
+	public Long getMontoReparaciones(){
+		return montoReparaciones;
+	}
+
+	public void setMontoReparaciones(Long montoReparaciones){
+		this.montoReparaciones = montoReparaciones;
 	}
 
 	public Auto getAuto() {
@@ -66,16 +95,60 @@ public class Orden
 		this.bono = bono;
 	}
 
-	public void setMonto(Integer monto){
-		this.monto = monto;
-	}
-
 	public Boolean getDescuentoDiaAtencion(){
-		return descuento_dia_atencion;
+		return descuentoDiaAtencion;
 	}
 
-	public void setDescuentoDiaAtencion(Boolean descuento_dia_atencion){
-		this.descuento_dia_atencion = descuento_dia_atencion;
+	public void setDescuentoDiaAtencion(Boolean descuentoDiaAtencion){
+		this.descuentoDiaAtencion = descuentoDiaAtencion;
+	}
+
+	public Long getDescuentoReparaciones(){
+		return descuentoReparaciones;
+	}
+
+	public void setDescuentoReparaciones(Long descuentoReparaciones){
+		this.descuentoReparaciones = descuentoReparaciones;
+	}
+
+	public void setDescuentoReparaciones(Double descuentoReparaciones){
+		this.descuentoReparaciones = Math.round(descuentoReparaciones);
+	}
+
+	public Long getRecargaAntiguedad(){
+		return recargaAntiguedad;
+	}
+
+	public void setRecargaAntiguedad(Long recargaAntiguedad){
+		this.recargaAntiguedad = recargaAntiguedad;
+	}
+
+	public void setRecargaAntiguedad(Double recargaAntiguedad){
+		this.recargaAntiguedad = Math.round(recargaAntiguedad);
+	}
+
+	public Long getRecargaKilometraje(){
+		return recargaKilometraje;
+	}
+
+	public void setRecargaKilometraje(Long recargaKilometraje){
+		this.recargaKilometraje = recargaKilometraje;
+	}
+
+	public void setRecargaKilometraje(Double recargaKilometraje){
+		this.recargaKilometraje = Math.round(recargaKilometraje);
+	}
+
+	public Long getRecargaAtraso(){
+		return recargaAtraso;
+	}
+
+	public void setRecargaAtraso(Long recargaAtraso){
+		this.recargaAtraso = recargaAtraso;
+	}
+
+	public void setRecargaAtraso(Double recargaAtraso){
+		this.recargaAtraso = Math.round(recargaAtraso);
 	}
 
 	public List<Reparacion> getReparacions() {

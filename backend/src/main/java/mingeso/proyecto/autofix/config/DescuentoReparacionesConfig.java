@@ -26,7 +26,7 @@ public class DescuentoReparacionesConfig {
 		listDiesel.add(0.12);
 		listDiesel.add(0.17);
 		listDiesel.add(0.22);
-		DESCUENTOS.put(Auto.Motor.GASOLINA, listDiesel);
+		DESCUENTOS.put(Auto.Motor.DIESEL, listDiesel);
 
 		// Para auto tipo HIBRIDO:
 		List<Double> listHibrido = new ArrayList<>();
@@ -45,7 +45,7 @@ public class DescuentoReparacionesConfig {
 		DESCUENTOS.put(Auto.Motor.ELECTRICO, listElectrico);
 	}
 
-	public static Double getDescuento(Auto.Motor tipoMotor, Integer reparaciones) {
+	public static Double getDescuento(Auto.Motor tipoMotor, Integer reparaciones) throws Exception {
 		List<Double> descuentos = DESCUENTOS.get(tipoMotor);
 		if (descuentos != null) {
 			if(reparaciones < 3){
@@ -59,6 +59,6 @@ public class DescuentoReparacionesConfig {
 			}
 			return descuentos.get(3);
 		}
-		return null;
+		throw new Exception(String.format("No se pudo obtener el descuento (tipoMotor=%s, reparaciones=%d)", tipoMotor.name(), reparaciones));
 	}
 }

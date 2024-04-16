@@ -1,6 +1,5 @@
 package mingeso.proyecto.autofix.controllers;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,11 +35,7 @@ public class BonoController
 	public ResponseEntity<List<Bono>> createBono(@RequestParam Long marcaId, @RequestParam Integer monto, @RequestParam Integer cantidad) {
 		Marca marca = marcaService.getMarcaById(marcaId);
 		if (marca != null) {
-			List<Bono> bonos = new ArrayList<>();
-			for(int i = 0; i < cantidad; ++i){
-				Bono bono = bonoService.createBono(marca, monto);
-				bonos.add(bono);
-			}
+			List<Bono> bonos = bonoService.createBonos(marca, monto, cantidad);
 			return ResponseEntity.status(HttpStatus.CREATED).body(bonos);
 		} else {
 			return ResponseEntity.notFound().build();

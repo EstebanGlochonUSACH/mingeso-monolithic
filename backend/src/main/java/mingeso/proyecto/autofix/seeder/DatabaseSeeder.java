@@ -1,66 +1,258 @@
 package mingeso.proyecto.autofix.seeder;
 
+import mingeso.proyecto.autofix.config.MontoReparacionConfig;
+import mingeso.proyecto.autofix.config.DescuentoReparacionesConfig;
+import mingeso.proyecto.autofix.config.RecargoAntiguedadConfig;
+import mingeso.proyecto.autofix.config.RecargoKilometrajeConfig;
+import mingeso.proyecto.autofix.config.RecargoAtrasoConfig;
+
 import mingeso.proyecto.autofix.entities.Auto;
 import mingeso.proyecto.autofix.entities.Marca;
 import mingeso.proyecto.autofix.entities.Bono;
 import mingeso.proyecto.autofix.entities.Orden;
 import mingeso.proyecto.autofix.entities.Reparacion;
-import mingeso.proyecto.autofix.entities.Reparacion.Tipo;
 
-import mingeso.proyecto.autofix.repositories.AutoRepository;
-import mingeso.proyecto.autofix.repositories.MarcaRepository;
-import mingeso.proyecto.autofix.repositories.BonoRepository;
-import mingeso.proyecto.autofix.repositories.OrdenRepository;
 import mingeso.proyecto.autofix.repositories.ReparacionRepository;
+
+import mingeso.proyecto.autofix.services.AutoService;
+import mingeso.proyecto.autofix.services.MarcaService;
+import mingeso.proyecto.autofix.services.BonoService;
+import mingeso.proyecto.autofix.services.OrdenService;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DatabaseSeeder implements CommandLineRunner {
+@ConditionalOnProperty(name = "seeder.enabled", havingValue = "true")
+public class DatabaseSeeder implements CommandLineRunner
+{
+	private static Integer MIN_YEAR = 2005;
+	private static Integer MAX_YEAR = 2024;
+	private static final Random RANDOM = new Random();
 
-    private final AutoRepository autoRepository;
-    private final MarcaRepository marcaRepository;
-    private final BonoRepository bonoRepository;
-    private final OrdenRepository ordenRepository;
-    private final ReparacionRepository reparacionRepository;
+	// Lista de modelos de autos
+	private static final List<String> autoModelos = new ArrayList<>();
+	static {
+		autoModelos.add("Corolla");
+		autoModelos.add("Civic");
+		autoModelos.add("Focus");
+		autoModelos.add("3 Series");
+		autoModelos.add("C-Class");
+		autoModelos.add("A4");
+		autoModelos.add("Golf");
+		autoModelos.add("Model S");
+	}
 
-    @Autowired
-    public DatabaseSeeder(AutoRepository autoRepository, MarcaRepository marcaRepository, BonoRepository bonoRepository, OrdenRepository ordenRepository, ReparacionRepository reparacionRepository) {
-        this.autoRepository = autoRepository;
-        this.marcaRepository = marcaRepository;
-        this.bonoRepository = bonoRepository;
-        this.ordenRepository = ordenRepository;
-        this.reparacionRepository = reparacionRepository;
-    }
+	private final AutoService autoService;
+	private final ReparacionRepository reparacionRepository;
 
-    @Override
-    public void run(String... args) throws Exception {
-        seedData();
-    }
+	private final BonoService bonoService;
+	private final MarcaService marcaService;
+	private final OrdenService ordenService;
 
-    private void seedData() {
-        Marca toyota = new Marca("Toyota");
-        marcaRepository.save(toyota);
+	@Autowired
+	public DatabaseSeeder(
+		AutoService autoService,
+		BonoService bonoService,
+		MarcaService marcaService,
+		OrdenService ordenService,
+		ReparacionRepository reparacionRepository
+	) {
+		this.autoService = autoService;
+		this.marcaService = marcaService;
+		this.ordenService = ordenService;
+		this.reparacionRepository = reparacionRepository;
 
-        Auto auto = new Auto("ABC123", toyota, "Corolla", Auto.Tipo.SEDAN, 2020, Auto.Motor.GASOLINA, 5);
-        autoRepository.save(auto);
+		this.bonoService = bonoService;
 
-        Bono bono = new Bono(toyota, 10000);
-        bonoRepository.save(bono);
+		Integer currentYear = LocalDate.now().getYear();
+		if(currentYear > MIN_YEAR + 10){
+			MAX_YEAR = currentYear;
+		}
+	}
 
-        Orden orden = new Orden();
-        orden.setAuto(auto);
-        orden.setBono(bono);
-        orden.setMonto(5000);
-        orden.setDescuentoDiaAtencion(true);
-        ordenRepository.save(orden);
+	@Override
+	public void run(String... args) throws Exception {
+		seedData();
+	}
 
-        Reparacion reparacion = new Reparacion();
-        reparacion.setTipo(Tipo.MOTOR);
-        reparacion.setMonto(2000);
-        reparacion.setOrden(orden);
-        reparacionRepository.save(reparacion);
-    }
+	private static Integer getRandomBetween(Integer first, Integer last) {
+		Integer randomYear = RANDOM.nextInt(last - first + 1) + first;
+		return randomYear;
+	}
+
+	private static Integer getRandomYear() {
+		return getRandomBetween(MIN_YEAR, MAX_YEAR);
+	}
+
+	private static String createPatente(String alphaBase, Integer number) {
+		return alphaBase + String.format("%03d", number);
+	}
+
+	public static <T extends Enum<?>> T getRandomEnumValue(Class<T> enumClass) {
+		T[] enumValues = enumClass.getEnumConstants();
+		int randomIndex = RANDOM.nextInt(enumValues.length);
+		return enumValues[randomIndex];
+	}
+
+	public static String getRandomAutoModelo() {
+		int randomIndex = RANDOM.nextInt(autoModelos.size());
+		return autoModelos.get(randomIndex);
+	}
+
+	private static Integer getRandomAsientos() {
+		return getRandomBetween(5, 8);
+	}
+
+	private static Integer getRandomKilometraje() {
+		return getRandomBetween(100, 200_000);
+	}
+
+	public static <T> T getRandomFromList(List<T> list) {
+		if (list == null || list.isEmpty()) {
+			throw new IllegalArgumentException("List must not be null or empty");
+		}
+		int randomIndex = RANDOM.nextInt(list.size());
+		return list.get(randomIndex);
+	}
+
+	public static <T> T getRandomAndRemove(List<T> list) {
+		if (list == null || list.isEmpty()) return null;
+		int randomIndex = RANDOM.nextInt(list.size());
+		T randomElement = list.get(randomIndex);
+		list.remove(randomIndex);
+		return randomElement;
+	}
+
+	private void createAutos(List<Auto> autos, Marca marca, Integer total, String basePatente) {
+		Auto auto;
+		String patente;
+		for(int i = 1; i <= total; ++i){
+			patente = createPatente(basePatente, i);
+			auto = autoService.getAutoByPatente(patente);
+			if(auto == null){
+				auto = new Auto(
+					patente,
+					marca,
+					getRandomAutoModelo(),
+					getRandomEnumValue(Auto.Tipo.class),
+					getRandomYear(),
+					getRandomEnumValue(Auto.Motor.class),
+					getRandomAsientos(),
+					getRandomKilometraje()
+				);
+				auto = autoService.saveAuto(auto);
+				autos.add(auto);
+			}
+			else{
+				autos.add(auto);
+			}
+		}
+	}
+
+	private Orden createOrden(Auto auto, Bono bono, LocalDateTime now, LocalDateTime currentDay) throws Exception {
+		// Crear Orden
+		Orden orden = new Orden(auto, currentDay);
+		if(bono != null){
+			orden.setBono(bono);
+		}
+		ordenService.createOrden(orden);
+
+		// Crear Reparaciones
+		Long montoReparaciones = 0L;
+		Reparacion reparacion;
+		Integer totalReparaciones = getRandomBetween(1, 11);
+		for(int i = 0; i < totalReparaciones; ++i){
+			Reparacion.Tipo tipoReparacion = getRandomEnumValue(Reparacion.Tipo.class);
+			Integer monto = MontoReparacionConfig.getMonto(auto.getMotor(), tipoReparacion);
+			montoReparaciones = montoReparaciones + monto.longValue();
+			reparacion = new Reparacion(orden, tipoReparacion, monto);
+			reparacionRepository.save(reparacion);
+		}
+
+		orden.setMontoReparaciones(montoReparaciones);
+		ordenService.updateOrden(orden);
+
+		// Simular Salida
+		LocalDateTime fechaSalida = currentDay.plusDays(totalReparaciones);
+		orden.setFechaSalida(fechaSalida);
+		if(fechaSalida.isAfter(now)) return orden;
+		Double descuentoReparaciones = DescuentoReparacionesConfig.getDescuento(auto.getMotor(), totalReparaciones);
+		Double recargaAntiguedad = RecargoAntiguedadConfig.getRecargo(auto.getTipo(), auto.getAnio());
+		Double recargaKilometraje = RecargoKilometrajeConfig.getRecargo(auto.getTipo(), auto.getKilometraje());
+		orden.setDescuentoReparaciones(descuentoReparaciones * montoReparaciones);
+		orden.setRecargaAntiguedad(recargaAntiguedad * montoReparaciones);
+		orden.setRecargaKilometraje(recargaKilometraje * montoReparaciones);
+		ordenService.updateOrden(orden);
+
+		// Simular Entrega (con o sin atraso)
+		Integer diasAtraso = getRandomBetween(0, 10);
+		LocalDateTime fechaEntrega = fechaSalida.plusDays(diasAtraso);
+		orden.setFechaEntrega(fechaEntrega);
+		Double recargaAtraso = RecargoAtrasoConfig.getRecargo(montoReparaciones, diasAtraso);
+		orden.setRecargaAtraso(recargaAtraso);
+		ordenService.updateOrden(orden);
+
+		return orden;
+	}
+
+	private void seedData() throws Exception {
+		// Registrar Marcas
+		Marca marcaToyota = marcaService.getOrCreateMarca("Toyota");
+		Marca marcaFord = marcaService.getOrCreateMarca("Ford");
+		Marca marcaHyundai = marcaService.getOrCreateMarca("Hyundai");
+		Marca marcaHonda = marcaService.getOrCreateMarca("Honda");
+		Marca marcaKia = marcaService.getOrCreateMarca("Kia");
+		Marca marcaChevrolet = marcaService.getOrCreateMarca("Chevrolet");
+
+		List<Bono> bonosToyota = bonoService.createBonos(marcaToyota, 70_000, 5);
+		List<Bono> bonosFord = bonoService.createBonos(marcaFord, 50_000, 2);
+		List<Bono> bonosHyundai = bonoService.createBonos(marcaHyundai, 30_000, 1);
+		List<Bono> bonosHonda = bonoService.createBonos(marcaHonda, 40_000, 7);
+
+		List<Auto> autos = new ArrayList<>();
+		createAutos(autos, marcaToyota, 40, "TOY");
+		createAutos(autos, marcaFord, 40, "FRD");
+		createAutos(autos, marcaHyundai, 30, "HYD");
+		createAutos(autos, marcaHonda, 30, "HON");
+		createAutos(autos, marcaKia, 10, "KIA");
+		createAutos(autos, marcaChevrolet, 50, "CHV");
+
+		Long totalOrdenes = Math.round(autos.size() * 2.5);
+		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime firstDay = now.minusYears(1);
+		firstDay = LocalDateTime.of(firstDay.getYear(), 1, firstDay.getDayOfMonth(), firstDay.getHour(), firstDay.getMinute());
+
+		Auto auto;
+		Marca marca;
+		Bono bono = null;
+		LocalDateTime currentDay = LocalDateTime.from(firstDay);
+		for(int i = 0; i < totalOrdenes; ++i){
+			currentDay = currentDay.plusDays(1);
+			bono = null;
+			auto = getRandomFromList(autos);
+			marca = auto.getMarca();
+			if(marca.equals(marcaToyota)){
+				bono = getRandomAndRemove(bonosToyota);
+			}
+			else if(marca.equals(marcaFord)){
+				bono = getRandomAndRemove(bonosFord);
+			}
+			else if(marca.equals(marcaHyundai)){
+				bono = getRandomAndRemove(bonosHyundai);
+			}
+			else if(marca.equals(marcaHonda)){
+				bono = getRandomAndRemove(bonosHonda);
+			}
+			createOrden(auto, bono, now, currentDay);
+		}
+	}
 }

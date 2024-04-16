@@ -58,7 +58,7 @@ public class RecargoKilometrajeConfig {
 		RECARGOS.put(Auto.Tipo.FURGONETA, listFurgoneta);
 	}
 
-	public static Double getRecargo(Auto.Tipo tipoAuto, Integer kilometraje) {
+	public static Double getRecargo(Auto.Tipo tipoAuto, Integer kilometraje) throws Exception {
 		List<Double> recargos = RECARGOS.get(tipoAuto);
 		if (recargos != null) {
 			if(kilometraje < 5_000){
@@ -75,6 +75,6 @@ public class RecargoKilometrajeConfig {
 			}
 			return recargos.get(4);
 		}
-		return null;
+		throw new Exception(String.format("No se pudo obtener la recarga (tipoAuto=%s, kilometraje=%s)", tipoAuto.name(), kilometraje.toString()));
 	}
 }
