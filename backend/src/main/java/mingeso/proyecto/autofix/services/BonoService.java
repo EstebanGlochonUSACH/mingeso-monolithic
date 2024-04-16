@@ -1,5 +1,6 @@
 package mingeso.proyecto.autofix.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,10 @@ public class BonoService
 	}
 
 	public Bono createBono(Marca marca, Integer monto) {
-		Bono bono = new Bono(marca, monto);
+        LocalDateTime now = LocalDateTime.now();
+		LocalDateTime fechaInicio = LocalDateTime.of(now.getYear(), now.getMonth(), 1, 0, 0, 0);
+		LocalDateTime fechaTermino = fechaInicio.plusMonths(1);
+		Bono bono = new Bono(marca, monto, fechaInicio, fechaTermino);
 		return bonoRepository.save(bono);
 	}
 

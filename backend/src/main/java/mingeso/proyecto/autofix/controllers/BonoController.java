@@ -1,9 +1,11 @@
 package mingeso.proyecto.autofix.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import mingeso.proyecto.autofix.entities.Bono;
 import mingeso.proyecto.autofix.entities.Marca;
@@ -30,11 +32,16 @@ public class BonoController
 	}
 
 	@PostMapping("/create")
-	public ResponseEntity<Bono> createBono(@RequestParam Long marcaId, @RequestParam Integer monto) {
+	@Transactional
+	public ResponseEntity<List<Bono>> createBono(@RequestParam Long marcaId, @RequestParam Integer monto, @RequestParam Integer cantidad) {
 		Marca marca = marcaService.getMarcaById(marcaId);
 		if (marca != null) {
-			Bono bono = bonoService.createBono(marca, monto);
-			return ResponseEntity.status(HttpStatus.CREATED).body(bono);
+			List<Bono> bonos = new ArrayList<>();
+			for(int i = 0; i < cantidad; ++i){
+				Bono bono = bonoService.createBono(marca, monto);
+				bonos.add(bono);
+			}
+			return ResponseEntity.status(HttpStatus.CREATED).body(bonos);
 		} else {
 			return ResponseEntity.notFound().build();
 		}
