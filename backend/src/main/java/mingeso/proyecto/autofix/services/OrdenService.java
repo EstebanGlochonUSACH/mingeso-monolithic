@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import mingeso.proyecto.autofix.entities.Auto;
 import mingeso.proyecto.autofix.entities.Bono;
 import mingeso.proyecto.autofix.entities.Orden;
 import mingeso.proyecto.autofix.repositories.BonoRepository;
@@ -47,11 +48,17 @@ public class OrdenService
 	}
 
 	@Transactional
-	public Orden updateOrden(Long id, Orden updatedOrden) {
+	public Orden updateOrden(Long id, Orden updatedOrden) throws Exception {
 		Orden existingOrden = ordenRepository.findById(id).orElse(null);
 		if (existingOrden != null) {
 			// Validar que el bono no este usado y que la orden no tenga bono
+			Auto auto = existingOrden.getAuto();
 			Bono bono = updatedOrden.getBono();
+
+			if(bono.getMarca().getId() != auto.getMarca().getId()){
+				throw new Exception("No se puede registrar un bono de una Marca distinta a la del auto!");
+			}
+
 			if(bono != null && bono.getUsado() == false && existingOrden.getBono() == null){
 				bono.setUsado(true);
 				bonoRepository.save(bono);

@@ -18,6 +18,10 @@ public class Marca
 		this.nombre = nombre;
 	}
 
+	public Long getId(){
+		return id_marca;
+	}
+
 	public String getNombre(){
 		return nombre;
 	}
