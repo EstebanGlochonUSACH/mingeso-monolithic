@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import mingeso.proyecto.autofix.entities.Auto;
+import mingeso.proyecto.autofix.entities.Marca;
 
 @Repository
 public interface AutoRepository extends JpaRepository<Auto, Long>
@@ -18,4 +19,6 @@ public interface AutoRepository extends JpaRepository<Auto, Long>
 	public Optional<Auto> findByPatente(String patente);
 
 	public Boolean existsByPatente(String patente);
+
+	Long countByMarca(Marca marca);
 }

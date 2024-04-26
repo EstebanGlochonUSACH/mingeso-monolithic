@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWrench } from '@fortawesome/free-solid-svg-icons/faWrench';
 import { faCarSide } from '@fortawesome/free-solid-svg-icons/faCarSide';
 import { faQuestion } from '@fortawesome/free-solid-svg-icons/faQuestion';
+import { faCopyright } from '@fortawesome/free-solid-svg-icons/faCopyright';
 import Nav from 'react-bootstrap/Nav';
 
 const Sidebar: FC = () => {
@@ -20,6 +21,9 @@ const Sidebar: FC = () => {
 					</Nav.Link>
 					<Nav.Link eventKey="/ordenes" href="/ordenes">
 						<div className="nav-icon"><FontAwesomeIcon icon={faQuestion} /></div> Ordenes
+					</Nav.Link>
+					<Nav.Link eventKey="/marcas" href="/marcas">
+						<div className="nav-icon"><FontAwesomeIcon icon={faCopyright} /></div> Marcas
 					</Nav.Link>
 				</Nav>
 			</div>

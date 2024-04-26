@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import mingeso.proyecto.autofix.entities.Marca;
+import mingeso.proyecto.autofix.models.MarcaDTO;
 import mingeso.proyecto.autofix.services.MarcaService;
 
 @RestController
@@ -20,8 +21,8 @@ public class MarcaController
 	}
 
 	@GetMapping
-	public ResponseEntity<List<Marca>> getAllMarcas() {
-		List<Marca> marcas = marcaService.getAllMarcas();
+	public ResponseEntity<List<MarcaDTO>> getAllMarcas() {
+		List<MarcaDTO> marcas = marcaService.getAllMarcas();
 		return ResponseEntity.ok(marcas);
 	}
 
@@ -36,7 +37,8 @@ public class MarcaController
 	}
 
 	@PostMapping("/create")
-	public ResponseEntity<Marca> createMarca(@RequestParam String nombre) {
+	public ResponseEntity<Marca> createMarca(@RequestBody MarcaDTO marcaDTO) {
+		String nombre = marcaDTO.getNombre(); 
 		Marca marca = marcaService.createMarca(nombre);
 		return ResponseEntity.status(HttpStatus.CREATED).body(marca);
 	}

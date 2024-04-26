@@ -19,6 +19,11 @@ $card-bg: var(--bs-tertiary-bg);
 	font-size: small;
 }
 
+.min-width-cell {
+	white-space: nowrap;
+	width: auto;
+}
+
 .layout-container {
 	width: 100vw;
 	height: 100vh;
