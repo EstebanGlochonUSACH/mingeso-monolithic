@@ -1,5 +1,5 @@
 import { type FC, type PropsWithChildren, createContext, useContext, useState, useEffect } from "react";
-import axios, { AxiosError } from "axios";
+import axios, { type AxiosError } from "axios";
 
 export interface Marca {
 	id: number,

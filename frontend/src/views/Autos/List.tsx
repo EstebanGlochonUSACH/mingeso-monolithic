@@ -162,13 +162,13 @@ const ListAutos: FC = () => {
 
 	return (
 		<Container>
-			<div className="d-flex justify-content-between align-items-center mt-3 mb-1">
-				<h3 className="m-0">Lista de Autos</h3>
-				<Button>
-					<FontAwesomeIcon icon={faSquarePlus} /> Registrar Vehículo
-				</Button>
-			</div>
 			<Card className="my-2">
+				<Card.Header className="d-flex justify-content-between align-items-center p-2 ps-3">
+					<div>Lista de Autos</div>
+					<Button href="/auto/create">
+						<FontAwesomeIcon icon={faSquarePlus} /> Registrar Vehículo
+					</Button>
+				</Card.Header>
 				<Card.Header className="p-2">
 					<Form onSubmit={handleSearchSubmit}>
 						<InputGroup>
@@ -179,7 +179,7 @@ const ListAutos: FC = () => {
 								aria-label="Patente"
 								aria-describedby="buscar-auto"
 							/>
-							<Button id="button-search-auto" type="submit">
+							<Button id="button-search-auto" type="submit" variant="outline-secondary">
 								<FontAwesomeIcon icon={faFilter} /> Filtrar
 							</Button>
 						</InputGroup>

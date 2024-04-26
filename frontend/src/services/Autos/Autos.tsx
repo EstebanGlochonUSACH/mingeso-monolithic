@@ -1,6 +1,14 @@
 import axios from 'axios';
 import type { Pagination } from '../../types/Pagination';
 
+export const autoTipos = ['SEDAN', 'HATCHBACK', 'SUV', 'PICKUP', 'FURGONETA'];
+
+export type AutoTipo = 'SEDAN' | 'HATCHBACK' | 'SUV' | 'PICKUP' | 'FURGONETA';
+
+export const autoMotores = ['GASOLINA', 'DIESEL', 'HIBRIDO', 'ELECTRICO'];
+
+export type AutoMotor = 'GASOLINA' | 'DIESEL' | 'HIBRIDO' | 'ELECTRICO';
+
 export interface Auto {
 	id: number,
 	patente: string,
@@ -12,8 +20,8 @@ export interface Auto {
 		nombre: string,
 	},
 	modelo: string,
-	motor: string,
-	tipo: string,
+	motor: AutoMotor,
+	tipo: AutoTipo,
 };
 
 export const getAutos = async (page: number, patente: string) => {
