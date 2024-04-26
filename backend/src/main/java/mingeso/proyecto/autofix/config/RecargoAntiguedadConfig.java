@@ -53,20 +53,20 @@ public class RecargoAntiguedadConfig
 		RECARGOS.put(Auto.Tipo.FURGONETA, listFurgoneta);
 	}
 
-	public static Double getRecargo(Auto.Tipo tipoAuto, Integer anio) throws Exception {
+	public static Double getRecargo(Auto.Tipo tipoAuto, Integer antiguedad) throws Exception {
 		List<Double> recargos = RECARGOS.get(tipoAuto);
 		if (recargos != null) {
-			if(anio < 6){
+			if(antiguedad < 6){
 				return recargos.get(0);
 			}
-			else if(anio >= 6 && anio < 11){
+			else if(antiguedad >= 6 && antiguedad < 11){
 				return recargos.get(1);
 			}
-			else if(anio >= 11 && anio < 16){
+			else if(antiguedad >= 11 && antiguedad < 16){
 				return recargos.get(2);
 			}
 			return recargos.get(3);
 		}
-		throw new Exception(String.format("No se pudo obtener la recarga (tipoAuto=%s, año=%s)", tipoAuto.name(), anio.toString()));
+		throw new Exception(String.format("No se pudo obtener la recarga (tipoAuto=%s, antiguedad=%s)", tipoAuto.name(), antiguedad.toString()));
 	}
 }

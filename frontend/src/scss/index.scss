@@ -1,0 +1,43 @@
+// Bootstrap's Settings
+
+$color-mode-type: data;
+$card-bg: var(--bs-tertiary-bg);
+
+@import "bootstrap/scss/bootstrap";
+
+// Projects's Settings
+
+:root {
+	--sidebar-width: 250px;
+	--sidebar-bg: var(--bs-tertiary-bg);
+	--sidebar-bg-hover: #{$gray-800};
+	--sidebar-border-width: var(--bs-border-width);
+	--sidebar-border-color: var(--bs-border-color-translucent);
+}
+
+.fs-small {
+	font-size: small;
+}
+
+.layout-container {
+	width: 100vw;
+	height: 100vh;
+	overflow: auto;
+	display: grid;
+	grid-template-columns: var(--sidebar-width) auto;
+
+	.layout-sidebar {
+		width: var(--sidebar-width);
+		overflow: auto;
+		height: 100vh;
+		position: relative;
+	}
+
+	.layout-routes {
+		overflow: auto;
+		height: 100vh;
+		position: relative;
+	}
+}
+
+@import "sidebar";

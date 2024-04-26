@@ -11,4 +11,8 @@ public class RecargoAtrasoConfig
 	public static Double getRecargo(Long monto, Integer dias) {
 		return monto * (RECARGO * dias);
 	}
+
+	public static Double getRecargo(Long monto, Long dias) {
+		return monto * (RECARGO * dias);
+	}
 }

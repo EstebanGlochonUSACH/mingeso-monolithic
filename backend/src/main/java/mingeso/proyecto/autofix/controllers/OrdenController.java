@@ -1,12 +1,17 @@
 package mingeso.proyecto.autofix.controllers;
 
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import mingeso.proyecto.autofix.entities.Auto;
 import mingeso.proyecto.autofix.entities.Orden;
 import mingeso.proyecto.autofix.models.ResponseObject;
+import mingeso.proyecto.autofix.services.AutoService;
 import mingeso.proyecto.autofix.services.OrdenService;
 
 @RestController
@@ -14,15 +19,26 @@ import mingeso.proyecto.autofix.services.OrdenService;
 public class OrdenController
 {
 	private final OrdenService ordenService;
+	private final AutoService autoService;
 
 	@Autowired
-	public OrdenController(OrdenService ordenService) {
+	public OrdenController(OrdenService ordenService, AutoService autoService) {
 		this.ordenService = ordenService;
+		this.autoService = autoService;
 	}
 
 	@GetMapping
-	public ResponseEntity<List<Orden>> getAllOrdenes() {
-		List<Orden> ordenes = ordenService.getAllOrdenes();
+	public ResponseEntity<Page<Orden>> getAllOrdenes(
+		@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "100") int limit,
+		@RequestParam(required = false) Long auto
+	) {
+		Auto autoEntity = null;
+		if(auto != null){
+			autoEntity = autoService.getAutoById(auto);
+		}
+		Pageable pageable = PageRequest.of(page, limit);
+		Page<Orden> ordenes = ordenService.getAllOrdenes(autoEntity, pageable);
 		return ResponseEntity.ok(ordenes);
 	}
 
@@ -52,7 +68,8 @@ public class OrdenController
 	@PutMapping("/{id}/update")
 	public ResponseEntity<ResponseObject<Orden>> updateOrden(@PathVariable Long id, @RequestBody Orden updatedOrden) {
 		try{
-			Orden updatedEntity = ordenService.updateOrden(updatedOrden);
+			Integer totalReparaciones = updatedOrden.getReparaciones().size();
+			Orden updatedEntity = ordenService.updateOrden(updatedOrden, totalReparaciones);
 			if (updatedEntity != null) {
 				ResponseObject<Orden> response = new ResponseObject<Orden>(null, updatedEntity);
 				return ResponseEntity.ok(response);

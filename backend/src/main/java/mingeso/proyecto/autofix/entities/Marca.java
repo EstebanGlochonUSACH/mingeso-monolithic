@@ -1,7 +1,7 @@
 package mingeso.proyecto.autofix.entities;
 
 import java.util.Objects;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,6 +13,7 @@ public class Marca
 {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
+	@JsonProperty("id")
 	private Long id_marca;
 
 	@Column(unique = true)

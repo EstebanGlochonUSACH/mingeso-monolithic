@@ -1,10 +1,6 @@
 package mingeso.proyecto.autofix.seeder;
 
 import mingeso.proyecto.autofix.config.MontoReparacionConfig;
-import mingeso.proyecto.autofix.config.DescuentoReparacionesConfig;
-import mingeso.proyecto.autofix.config.RecargoAntiguedadConfig;
-import mingeso.proyecto.autofix.config.RecargoKilometrajeConfig;
-import mingeso.proyecto.autofix.config.RecargoAtrasoConfig;
 
 import mingeso.proyecto.autofix.entities.Auto;
 import mingeso.proyecto.autofix.entities.Marca;
@@ -21,6 +17,7 @@ import mingeso.proyecto.autofix.services.OrdenService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -160,46 +157,46 @@ public class DatabaseSeeder implements CommandLineRunner
 
 	private Orden createOrden(Auto auto, Bono bono, LocalDateTime now, LocalDateTime currentDay) throws Exception {
 		// Crear Orden
-		Orden orden = new Orden(auto, currentDay);
+		Orden orden = new Orden(auto);
 		if(bono != null){
 			orden.setBono(bono);
 		}
 		ordenService.createOrden(orden);
 
-		// Crear Reparaciones
+		// Crear Reparaciones & Ingreso de la orden
 		Long montoReparaciones = 0L;
 		Reparacion reparacion;
 		Integer totalReparaciones = getRandomBetween(1, 11);
-		for(int i = 0; i < totalReparaciones; ++i){
-			Reparacion.Tipo tipoReparacion = getRandomEnumValue(Reparacion.Tipo.class);
-			Integer monto = MontoReparacionConfig.getMonto(auto.getMotor(), tipoReparacion);
-			montoReparaciones = montoReparaciones + monto.longValue();
-			reparacion = new Reparacion(orden, tipoReparacion, monto);
-			reparacionRepository.save(reparacion);
+		Integer countReparaciones = 0;
+		do {
+			for(int i = 0; i < totalReparaciones; ++i){
+				Reparacion.Tipo tipoReparacion = getRandomEnumValue(Reparacion.Tipo.class);
+				Integer monto = MontoReparacionConfig.getMonto(auto.getMotor(), tipoReparacion);
+				if(monto > 0){
+					montoReparaciones = montoReparaciones + monto.longValue();
+					reparacion = new Reparacion(orden, tipoReparacion, monto);
+					reparacionRepository.save(reparacion);
+					++countReparaciones;
+				}
+			}
 		}
+		while(countReparaciones == 0);
 
+		orden.setFechaIngreso(currentDay);
 		orden.setMontoReparaciones(montoReparaciones);
-		ordenService.updateOrden(orden);
+		ordenService.updateOrden(orden, totalReparaciones);
 
 		// Simular Salida
 		LocalDateTime fechaSalida = currentDay.plusDays(totalReparaciones);
 		orden.setFechaSalida(fechaSalida);
 		if(fechaSalida.isAfter(now)) return orden;
-		Double descuentoReparaciones = DescuentoReparacionesConfig.getDescuento(auto.getMotor(), totalReparaciones);
-		Double recargaAntiguedad = RecargoAntiguedadConfig.getRecargo(auto.getTipo(), auto.getAnio());
-		Double recargaKilometraje = RecargoKilometrajeConfig.getRecargo(auto.getTipo(), auto.getKilometraje());
-		orden.setDescuentoReparaciones(descuentoReparaciones * montoReparaciones);
-		orden.setRecargaAntiguedad(recargaAntiguedad * montoReparaciones);
-		orden.setRecargaKilometraje(recargaKilometraje * montoReparaciones);
-		ordenService.updateOrden(orden);
+		ordenService.updateOrden(orden, totalReparaciones);
 
 		// Simular Entrega (con o sin atraso)
 		Integer diasAtraso = getRandomBetween(0, 10);
 		LocalDateTime fechaEntrega = fechaSalida.plusDays(diasAtraso);
 		orden.setFechaEntrega(fechaEntrega);
-		Double recargaAtraso = RecargoAtrasoConfig.getRecargo(montoReparaciones, diasAtraso);
-		orden.setRecargaAtraso(recargaAtraso);
-		ordenService.updateOrden(orden);
+		ordenService.updateOrden(orden, totalReparaciones);
 
 		return orden;
 	}
@@ -229,14 +226,31 @@ public class DatabaseSeeder implements CommandLineRunner
 		Long totalOrdenes = Math.round(autos.size() * 2.5);
 		LocalDateTime now = LocalDateTime.now();
 		LocalDateTime firstDay = now.minusYears(1);
-		firstDay = LocalDateTime.of(firstDay.getYear(), 1, firstDay.getDayOfMonth(), firstDay.getHour(), firstDay.getMinute());
+		firstDay = LocalDateTime.of(firstDay.getYear(), 1, 1, firstDay.getHour(), firstDay.getMinute());
 
 		Auto auto;
 		Marca marca;
 		Bono bono = null;
 		LocalDateTime currentDay = LocalDateTime.from(firstDay);
+		Month lastMonth = currentDay.getMonth();
 		for(int i = 0; i < totalOrdenes; ++i){
 			currentDay = currentDay.plusDays(1);
+			currentDay = LocalDateTime.of(
+				currentDay.getYear(),
+				currentDay.getMonth(),
+				currentDay.getDayOfMonth(),
+				getRandomBetween(8, 18),
+				getRandomBetween(1, 59)
+			);
+
+			if(currentDay.getMonth() != lastMonth){
+				lastMonth = currentDay.getMonth();
+				bonosToyota = bonoService.createBonos(marcaToyota, 70_000, 5);
+				bonosFord = bonoService.createBonos(marcaFord, 50_000, 2);
+				bonosHyundai = bonoService.createBonos(marcaHyundai, 30_000, 1);
+				bonosHonda = bonoService.createBonos(marcaHonda, 40_000, 7);
+			}
+
 			bono = null;
 			auto = getRandomFromList(autos);
 			marca = auto.getMarca();

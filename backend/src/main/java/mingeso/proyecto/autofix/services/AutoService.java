@@ -1,7 +1,8 @@
 package mingeso.proyecto.autofix.services;
 
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import mingeso.proyecto.autofix.entities.Auto;
 import mingeso.proyecto.autofix.repositories.AutoRepository;
@@ -16,8 +17,8 @@ public class AutoService
 		this.autoRepository = autoRepository;
 	}
 
-	public List<Auto> getAllAutos() {
-		return autoRepository.findAll();
+	public Page<Auto> getAllAutos(String patente, Pageable pageable) {
+		return autoRepository.findAll(patente, pageable);
 	}
 
 	public Auto getAutoById(Long id) {

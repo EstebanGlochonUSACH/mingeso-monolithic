@@ -1,0 +1,1 @@
+export type ReducerAction = { type: Symbol } & Record<string, any>;

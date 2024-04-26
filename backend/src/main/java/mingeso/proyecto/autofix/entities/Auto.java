@@ -1,7 +1,6 @@
 package mingeso.proyecto.autofix.entities;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,8 +9,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import mingeso.proyecto.autofix.serialization.EnumToStringSerializer;
-import mingeso.proyecto.autofix.serialization.StringToEnumDeserializer;
 
 @Entity
 public class Auto
@@ -21,6 +18,7 @@ public class Auto
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
+	@JsonProperty("id")
 	private Long id_auto;
 
 	@Column(unique = true)
@@ -32,14 +30,10 @@ public class Auto
 
 	private String modelo;
 
-	@JsonSerialize(using = EnumToStringSerializer.class)
-	@JsonDeserialize(using = StringToEnumDeserializer.class)
 	private Tipo tipo;
 
 	private Integer anio;
 
-	@JsonSerialize(using = EnumToStringSerializer.class)
-	@JsonDeserialize(using = StringToEnumDeserializer.class)
 	private Motor motor;
 
 	private Integer asientos;

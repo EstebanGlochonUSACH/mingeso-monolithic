@@ -1,0 +1,36 @@
+.sidebar {
+    height: 100%;
+    width: var(--sidebar-width);
+    background-color: var(--sidebar-bg);
+    border-right: var(--sidebar-border-width) solid var(--sidebar-border-color);
+
+    .logo {
+        text-align: center;
+        font-size: 1.2em;
+        border-bottom: var(--sidebar-border-width) solid var(--sidebar-border-color);
+    }
+
+    .sidebar-navbar {
+        .nav-link{
+            color: inherit;
+            border-bottom: var(--sidebar-border-width) solid var(--sidebar-border-color);
+            display: grid;
+            grid-template-columns: 1.5rem auto;
+            gap: 1rem;
+
+            &:hover {
+                background-color: var(--sidebar-bg-hover);
+            }
+
+            &.active {
+                background-color: var(--bs-primary);
+            }
+
+            .nav-icon{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+    }
+}

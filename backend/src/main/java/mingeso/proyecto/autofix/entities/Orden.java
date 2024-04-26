@@ -3,6 +3,7 @@ package mingeso.proyecto.autofix.entities;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -21,19 +22,19 @@ public class Orden
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id_orden;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_auto")
 	public Auto auto;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_bono", nullable = true)
 	public Bono bono;
 
 	@Column(name = "monto_reparaciones", nullable = true)
 	private Long montoReparaciones;
 
-	@Column(name = "descuento_dia_atencion")
-	private Boolean descuentoDiaAtencion;
+	@Column(name = "descuento_dia_atencion", nullable = true)
+	private Long descuentoDiaAtencion;
 
 	@Column(name = "descuento_reparaciones", nullable = true)
 	private Long descuentoReparaciones;
@@ -47,7 +48,13 @@ public class Orden
 	@Column(name = "recarga_atraso", nullable = true)
 	private Long recargaAtraso;
 
-	@Column(name = "fecha_ingreso")
+	@Column(name = "valor_iva", nullable = true)
+	private Long valorIva;
+
+	@Column(name = "monto_total", nullable = true)
+	private Long montoTotal;
+
+	@Column(name = "fecha_ingreso", nullable = true)
 	private LocalDateTime fechaIngreso;
 
 	@Column(name = "fecha_salida", nullable = true)
@@ -57,14 +64,24 @@ public class Orden
 	private LocalDateTime fechaEntrega;
 
 	@OneToMany(mappedBy = "orden", fetch = FetchType.LAZY)
+	@JsonManagedReference
 	private List<Reparacion> reparaciones = new ArrayList<Reparacion>();
 
 	public Orden() {}
 
-	public Orden(Auto auto, LocalDateTime fechaIngreso){
+	public Orden(Auto auto){
 		this.auto = auto;
-		this.fechaIngreso = fechaIngreso;
-		this.descuentoDiaAtencion = false;
+		this.fechaIngreso = null;
+		this.fechaSalida = null;
+		this.fechaEntrega = null;
+		this.montoReparaciones = null;
+		this.descuentoDiaAtencion = null;
+		this.descuentoReparaciones = null;
+		this.recargaAntiguedad = null;
+		this.recargaKilometraje = null;
+		this.recargaAtraso = null;
+		this.valorIva = null;
+		this.montoTotal = null;
 	}
 
 	public Long getId(){
@@ -95,11 +112,11 @@ public class Orden
 		this.bono = bono;
 	}
 
-	public Boolean getDescuentoDiaAtencion(){
+	public Long getDescuentoDiaAtencion(){
 		return descuentoDiaAtencion;
 	}
 
-	public void setDescuentoDiaAtencion(Boolean descuentoDiaAtencion){
+	public void setDescuentoDiaAtencion(Long descuentoDiaAtencion){
 		this.descuentoDiaAtencion = descuentoDiaAtencion;
 	}
 
@@ -111,20 +128,12 @@ public class Orden
 		this.descuentoReparaciones = descuentoReparaciones;
 	}
 
-	public void setDescuentoReparaciones(Double descuentoReparaciones){
-		this.descuentoReparaciones = Math.round(descuentoReparaciones);
-	}
-
 	public Long getRecargaAntiguedad(){
 		return recargaAntiguedad;
 	}
 
 	public void setRecargaAntiguedad(Long recargaAntiguedad){
 		this.recargaAntiguedad = recargaAntiguedad;
-	}
-
-	public void setRecargaAntiguedad(Double recargaAntiguedad){
-		this.recargaAntiguedad = Math.round(recargaAntiguedad);
 	}
 
 	public Long getRecargaKilometraje(){
@@ -135,10 +144,6 @@ public class Orden
 		this.recargaKilometraje = recargaKilometraje;
 	}
 
-	public void setRecargaKilometraje(Double recargaKilometraje){
-		this.recargaKilometraje = Math.round(recargaKilometraje);
-	}
-
 	public Long getRecargaAtraso(){
 		return recargaAtraso;
 	}
@@ -147,11 +152,23 @@ public class Orden
 		this.recargaAtraso = recargaAtraso;
 	}
 
-	public void setRecargaAtraso(Double recargaAtraso){
-		this.recargaAtraso = Math.round(recargaAtraso);
+	public void setValorIva(Long valorIva){
+		this.valorIva = valorIva;
 	}
 
-	public List<Reparacion> getReparacions() {
+	public Long getValorIva(){
+		return valorIva;
+	}
+
+	public void setMontoTotal(Long montoTotal){
+		this.montoTotal = montoTotal;
+	}
+
+	public Long getMontoTotal(){
+		return montoTotal;
+	}
+
+	public List<Reparacion> getReparaciones() {
 		return reparaciones;
 	}
 
