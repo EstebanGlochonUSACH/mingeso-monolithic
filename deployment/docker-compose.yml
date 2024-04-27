@@ -20,7 +20,6 @@ services:
       - 5435:5432
   # Backend & Frontend
   backend:
-    container_name: autofix-backend
     image: estebanglochon/autofix-monolothic-backend
     ports:
       - 8091:8090
@@ -42,7 +41,6 @@ services:
     depends_on:
       - postgres
   frontend:
-    container_name: autofix-frontend
     image: estebanglochon/autofix-monolothic-frontend
     ports:
       - 3001:3000
