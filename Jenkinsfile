@@ -12,6 +12,14 @@ pipeline{
                         }
                     }                    
                 }
+                dir("backend"){
+                    script{
+                        withDockerRegistry(credentialsId: 'docker-credentials'){
+                            sh "docker build -t estebanglochon/autofix-monolothic-backend ."
+                            sh "docker push estebanglochon/autofix-monolothic-backend"
+                        }
+                    }                    
+                }
             }
         }
     }
