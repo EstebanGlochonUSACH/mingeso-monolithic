@@ -21,10 +21,11 @@ services:
     image: estebanglochon/autofix-monolothic-backend
     environment:
       SERVER_PORT: 8090
-      DB_HOST: autofix-postgres
-      DB_PORT: 5432
-      DB_USERNAME: postgres
-      DB_PASSWORD: postgres
+      TZ: America/Santiago
+      SEEDER_ENABLED: "false"
+      POSTGRES_URL: jdbc:postgresql://autofix-postgres:5432/autofix
+      POSTGRES_USER: postgres
+      POSTGRES_PASS: wkBsT1WyPxAEAzS9
     networks:
       - autofix-network
     deploy:
