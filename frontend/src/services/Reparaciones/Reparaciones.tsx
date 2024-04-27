@@ -68,6 +68,8 @@ const reparacionesTipo: Record<string, ReparacionTipoDetail> = {
     },
 };
 
+export const getAllReparacionTipo = () => Object.keys(reparacionesTipo);
+
 export const getReparacionDetail = (tipo: string): ReparacionTipoDetail => {
     if(tipo in reparacionesTipo){
         return reparacionesTipo[tipo];

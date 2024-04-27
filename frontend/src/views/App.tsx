@@ -8,6 +8,7 @@ import ListMarcas from "./Marcas/List";
 import ListOrdenes from "./Ordenes/List";
 import ShowOrden from "./Ordenes/Show";
 import ListBonos from "./Bonos/List";
+import RouterReportes from "./Reportes/Router";
 
 const App: FC = () => {
 	return (
@@ -27,6 +28,7 @@ const App: FC = () => {
 							<Route path="/orden/:id" element={<ShowOrden />} />
 							<Route path="/marcas" element={<ListMarcas />} />
 							<Route path="/bonos" element={<ListBonos />} />
+							<Route path="/reportes/*" element={<RouterReportes />} />
 						</Routes>
 					</main>
 				</div>
