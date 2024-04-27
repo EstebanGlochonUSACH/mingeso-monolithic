@@ -22,5 +22,15 @@ pipeline{
                 }
             }
         }
+        stage("Deploy with Docker Compose") {
+            steps {
+                dir("deployment"){
+                    script {
+                        sh "docker-compose pull"
+                        sh "docker-compose up -d"
+                    }
+                }
+            }
+        }
     }
 }
