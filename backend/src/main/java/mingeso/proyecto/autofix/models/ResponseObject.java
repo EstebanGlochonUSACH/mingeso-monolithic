@@ -8,7 +8,7 @@ public class ResponseObject<T> {
 	public ResponseObject(String message, T entity) {
 		this.message = message;
 		this.entity = entity;
-		this.error = (entity != null);
+		this.error = (entity == null);
 	}
 
 	public Boolean getError(){

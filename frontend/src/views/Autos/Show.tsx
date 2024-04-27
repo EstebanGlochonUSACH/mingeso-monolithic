@@ -1,13 +1,17 @@
 import { useReducer, type FC, useEffect } from "react";
-import { Params, useParams } from "react-router-dom";
+import type { AxiosError } from "axios";
+import { Params, useNavigate, useParams } from "react-router-dom";
 import { getAuto, type Auto, updateAuto } from "../../services/Autos/Autos";
 import type { ReducerAction } from "../../types/Reducer";
-import type { Orden } from "../../services/Ordenes/Ordenes";
+import { createOrden, type Orden } from "../../services/Ordenes/Ordenes";
 import type { Pagination } from "../../types/Pagination";
+import type { ResponseObject } from "../../types/ResponseObject";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWarning } from '@fortawesome/free-solid-svg-icons/faWarning';
+import { faFileLines } from '@fortawesome/free-solid-svg-icons/faFileLines';
 import Badge from "react-bootstrap/Badge";
 import Card from "react-bootstrap/Card";
+import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import AutoInfoTable from "../../components/AutoInfoTable";
 import AutoOrdenes from "../../components/AutoOrdenes";
@@ -67,6 +71,7 @@ const reducerInit = (params: Params): ReducerState => {
 const ShowAuto: FC = () => {
 	const params = useParams();
 	const [state, dispatch] = useReducer(reducerHandler, params, reducerInit);
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		if(params.id){
@@ -88,6 +93,28 @@ const ShowAuto: FC = () => {
 		updateAuto(auto)
 			.then(auto => dispatch({ type: actions.FETCH_SUCCESS, auto }))
 			.catch((err: Error) => dispatch({ type: actions.FETCH_FAILED, error: err.message }));
+	};
+
+	const handleCreateOrden = (auto: Auto|null) => {
+		if(auto){
+			createOrden(auto).then(resObj => {
+				if(resObj.error){
+					alert(resObj.message);
+				}
+				else if(resObj.entity){
+					const orden = resObj.entity;
+					navigate('/orden/' + orden.id);
+				}
+			})
+			.catch((err: AxiosError) => {
+				if(err.response?.data){
+					alert((err.response?.data as ResponseObject<null>).message);
+				}
+				else{
+					alert('Ocurrió un error. No se pudo crear la orden.')
+				}
+			});
+		}
 	};
 
 	return (
@@ -112,6 +139,9 @@ const ShowAuto: FC = () => {
 							auto={state.auto}
 							onChange={handleChangeAuto}
 						/>
+						<Button className="mt-2" onClick={() => handleCreateOrden(state.auto)} disabled={state.auto == null}>
+							<FontAwesomeIcon icon={faFileLines} /> Crear Orden
+						</Button>
 					</Card.Body>
 				)))}
 			</Card>

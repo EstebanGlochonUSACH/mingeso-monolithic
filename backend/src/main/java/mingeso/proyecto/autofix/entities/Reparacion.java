@@ -35,8 +35,6 @@ public class Reparacion
 	@JsonBackReference
 	public Orden orden;
 
-	// @JsonSerialize(using = EnumToStringSerializer.class)
-	// @JsonDeserialize(using = StringToEnumDeserializer.class)
 	private Tipo tipo;
 
 	private Integer monto;
@@ -47,6 +45,14 @@ public class Reparacion
 		this.orden = orden;
 		this.tipo = tipo;
 		this.monto = monto;
+	}
+
+	public Long getId(){
+		return id_reparacion;
+	}
+
+	public void setId(Long id_reparacion){
+		this.id_reparacion = id_reparacion;
 	}
 
 	public Orden getOrden() {

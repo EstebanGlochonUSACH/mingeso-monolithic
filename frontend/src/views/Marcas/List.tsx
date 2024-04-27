@@ -25,7 +25,7 @@ const ListMarcas: FC = () => {
 	};
 
 	return (
-		<Container>
+		<Container className="py-2">
 			<Card>
 				<Card.Header>Marcas</Card.Header>
 				{loading ? (

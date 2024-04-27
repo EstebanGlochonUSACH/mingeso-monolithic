@@ -1,4 +1,4 @@
-package mingeso.proyecto.autofix.models;
+package mingeso.proyecto.autofix.dtos;
 
 public class MarcaDTO {
 	private Long id;

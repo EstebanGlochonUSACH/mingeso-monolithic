@@ -1,17 +1,11 @@
 import { useReducer, type FC, useEffect, useCallback, type ChangeEventHandler, type FormEventHandler } from "react";
-import type { AxiosError } from "axios";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { getAutos, type Auto } from "../../services/Autos/Autos";
-import { createOrden } from "../../services/Ordenes/Ordenes";
+import { Link, useSearchParams } from "react-router-dom";
+import { getOrdenesWithPatente, type Orden } from "../../services/Ordenes/Ordenes";
 import type { ReducerAction } from "../../types/Reducer";
 import type { Pagination as PaginationType } from "../../types/Pagination";
-import type { ResponseObject } from "../../types/ResponseObject";
-import { numberWithCommas } from "../../utils/utils";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWarning } from '@fortawesome/free-solid-svg-icons/faWarning';
 import { faFilter } from '@fortawesome/free-solid-svg-icons/faFilter';
-import { faFileLines } from '@fortawesome/free-solid-svg-icons/faFileLines';
-import { faSquarePlus } from '@fortawesome/free-solid-svg-icons/faSquarePlus';
 import Container from 'react-bootstrap/Container';
 import Card from 'react-bootstrap/Card';
 import Table from 'react-bootstrap/Table';
@@ -19,11 +13,12 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Pagination from 'react-bootstrap/Pagination';
 import InputGroup from 'react-bootstrap/InputGroup';
+import { Badge } from "react-bootstrap";
 
 interface ReducerState {
 	loading: boolean,
 	error: string|null,
-	autos: PaginationType<Auto>|null,
+	ordenes: PaginationType<Orden>|null,
 	page: number,
 	patente: string,
 	patenteBuffer: string,
@@ -32,7 +27,7 @@ interface ReducerState {
 const DEFAULT_STATE: ReducerState = {
 	loading: true,
 	error: null,
-	autos: null,
+	ordenes: null,
 	page: 0,
 	patente: '',
 	patenteBuffer: '',
@@ -52,10 +47,10 @@ const reducerHandler = (state: ReducerState, action: ReducerAction): ReducerStat
 		return { ...state, loading: true };
 	}
 	else if(action.type === actions.FETCH_SUCCESS){
-		return { ...state, loading: false, error: null, autos: action.autos };
+		return { ...state, loading: false, error: null, ordenes: action.ordenes };
 	}
 	else if(action.type === actions.FETCH_FAILED){
-		return { ...state, loading: false, autos: null, error: action.error };
+		return { ...state, loading: false, ordenes: null, error: action.error };
 	}
 	else if(action.type === actions.CHANGE_PAGE){
 		return { ...state, page: action.page };
@@ -94,15 +89,14 @@ const reducerInit = (searchParams: URLSearchParams): ReducerState => {
 	return { ...DEFAULT_STATE, page, patente: patente, patenteBuffer: patente };
 };
 
-const ListAutos: FC = () => {
+const ListOrdenes: FC = () => {
 	const [searchParams, setSearchParams] = useSearchParams();
 	const [state, dispatch] = useReducer(reducerHandler, searchParams, reducerInit);
-	const navigate = useNavigate();
 
 	useEffect(() => {
 		dispatch({ type: actions.FETCHING });
-		getAutos(state.page, state.patente).then(autos => {
-			dispatch({ type: actions.FETCH_SUCCESS, autos });
+		getOrdenesWithPatente(state.page, state.patente).then(ordenes => {
+			dispatch({ type: actions.FETCH_SUCCESS, ordenes });
 		})
 		.catch((err: Error) => {
 			dispatch({ type: actions.FETCH_FAILED, error: err.message });
@@ -148,32 +142,12 @@ const ListAutos: FC = () => {
 		dispatch({ type: actions.UPDATE_PATENTE, patente: state.patenteBuffer });
 	};
 
-	const handleCreateOrden = (auto: Auto) => {
-		createOrden(auto).then(resObj => {
-			if(resObj.error){
-				alert(resObj.message);
-			}
-			else if(resObj.entity){
-				const orden = resObj.entity;
-				navigate('/orden/' + orden.id);
-			}
-		})
-		.catch((err: AxiosError) => {
-			if(err.response?.data){
-				alert((err.response?.data as ResponseObject<null>).message);
-			}
-			else{
-				alert('Ocurrió un error. No se pudo crear la orden.')
-			}
-		})
-	};
-
 	let pageItems = [];
-	if(state.autos){
-		for (let number = 0; number < state.autos.totalPages; number++) {
+	if(state.ordenes){
+		for (let number = 0; number < state.ordenes.totalPages; number++) {
 			pageItems.push(
-				(number === state.autos.number) ? (
-					<Pagination.Item key={number} active={number === state.autos.number}>
+				(number === state.ordenes.number) ? (
+					<Pagination.Item key={number} active={number === state.ordenes.number}>
 						{number+1}
 					</Pagination.Item>
 				):(
@@ -188,11 +162,8 @@ const ListAutos: FC = () => {
 	return (
 		<Container className="py-2">
 			<Card>
-				<Card.Header className="d-flex justify-content-between align-items-center p-2 ps-3">
-					<div>Lista de Autos</div>
-					<Button href="/auto/create">
-						<FontAwesomeIcon icon={faSquarePlus} /> Registrar Vehículo
-					</Button>
+				<Card.Header>
+					<div>Lista de Ordenes</div>
 				</Card.Header>
 				<Card.Header className="p-2">
 					<Form onSubmit={handleSearchSubmit}>
@@ -202,21 +173,21 @@ const ListAutos: FC = () => {
 								onChange={handleChangePatenteBuffer}
 								placeholder="Filtrar por patente"
 								aria-label="Patente"
-								aria-describedby="buscar-auto"
+								aria-describedby="buscar-orden"
 							/>
-							<Button id="button-search-auto" type="submit" variant="outline-secondary">
+							<Button id="button-search-orden" type="submit" variant="outline-secondary">
 								<FontAwesomeIcon icon={faFilter} /> Filtrar
 							</Button>
 						</InputGroup>
 					</Form>
 				</Card.Header>
 				{state.loading ? (
-					<Card.Body className="text-center fst-italic p-4">Cargando Autos...</Card.Body>
+					<Card.Body className="text-center fst-italic p-4">Cargando Ordenes...</Card.Body>
 				):((state.error) ? (
 					<Card.Body className="text-center fst-italic p-5">
 						<FontAwesomeIcon icon={faWarning} /> {state.error}
 					</Card.Body>
-				):((state.autos === null) ? (
+				):((!state.ordenes) ? (
 					<Card.Body className="text-center fst-italic p-5">
 						<FontAwesomeIcon icon={faWarning} /> Ocurri&oacute; un error
 					</Card.Body>
@@ -225,35 +196,29 @@ const ListAutos: FC = () => {
 						<Table striped bordered hover>
 							<thead>
 								<tr>
+									<th>Código</th>
 									<th>Patente</th>
-									<th>A&ntilde;o</th>
-									<th>Marca</th>
-									<th>Modelo</th>
-									<th>Asientos</th>
-									<th>Motor</th>
-									<th>Tipo</th>
-									<th>Kilometraje</th>
-									<th>Crear Orden</th>
+									<th>Bono</th>
+									<th>Fecha Ingreso</th>
+									<th>Fecha Salida</th>
+									<th>Fecha Entrega</th>
+									<th>Atraso</th>
 								</tr>
 							</thead>
 							<tbody>
-								{state.autos.content.map(auto => (
-									<tr key={auto.id}>
+								{state.ordenes.content.map(orden => (
+									<tr key={orden.id}>
 										<td>
-											<Link to={"/auto/" + auto.id}>{auto.patente}</Link>
+											<Link to={"/orden/" + orden.id}>Orden #{orden.id}</Link>
 										</td>
-										<td align="right">{auto.anio}</td>
-										<td>{auto.marca.nombre}</td>
-										<td>{auto.modelo}</td>
-										<td align="right">{auto.asientos}</td>
-										<td>{auto.motor}</td>
-										<td>{auto.tipo}</td>
-										<td align="right">{numberWithCommas(auto.kilometraje)}</td>
-										<td align="center">
-											<Button size="sm" onClick={() => handleCreateOrden(auto)}>
-												<FontAwesomeIcon icon={faFileLines} /> Crear Orden
-											</Button>
-										</td>
+										<td>
+											<Link to={"/auto/" + orden.auto.id}>{orden.auto.patente}</Link>
+                                        </td>
+										<td>{(orden.bono) ? (<Badge pill>{orden.bono.marca.nombre}#{orden.bono.id}</Badge>) : (<em className="opacity-50">N/A</em>)}</td>
+										<td>{orden.fechaIngreso ? orden.fechaIngreso : (<em className="opacity-25">N/A</em>)}</td>
+										<td>{orden.fechaSalida ? orden.fechaSalida : (<em className="opacity-25">N/A</em>)}</td>
+										<td>{orden.fechaEntrega ? orden.fechaEntrega : (<em className="opacity-25">N/A</em>)}</td>
+										<td>{orden.atraso ? `${orden.atraso} días` : (<em className="opacity-25">N/A</em>)}</td>
 									</tr>
 								))}
 							</tbody>
@@ -270,4 +235,4 @@ const ListAutos: FC = () => {
 	);
 };
 
-export default ListAutos;
+export default ListOrdenes;

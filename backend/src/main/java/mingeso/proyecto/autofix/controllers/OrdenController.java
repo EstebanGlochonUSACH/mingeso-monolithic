@@ -31,15 +31,25 @@ public class OrdenController
 	public ResponseEntity<Page<Orden>> getAllOrdenes(
 		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "100") int limit,
-		@RequestParam(required = false) Long auto
+		@RequestParam(required = false) Long auto,
+		@RequestParam(required = false) String patente
 	) {
-		Auto autoEntity = null;
 		if(auto != null){
-			autoEntity = autoService.getAutoById(auto);
+			Auto autoEntity = autoService.getAutoById(auto);
+			Pageable pageable = PageRequest.of(page, limit);
+			Page<Orden> ordenes = ordenService.getAllOrdenes(autoEntity, pageable);
+			return ResponseEntity.ok(ordenes);
 		}
-		Pageable pageable = PageRequest.of(page, limit);
-		Page<Orden> ordenes = ordenService.getAllOrdenes(autoEntity, pageable);
-		return ResponseEntity.ok(ordenes);
+		else if(patente != null){
+			Pageable pageable = PageRequest.of(page, limit);
+			Page<Orden> ordenes = ordenService.getAllOrdenesByPatente(patente, pageable);
+			return ResponseEntity.ok(ordenes);
+		}
+		else{
+			Pageable pageable = PageRequest.of(page, limit);
+			Page<Orden> ordenes = ordenService.getAllOrdenes(null, pageable);
+			return ResponseEntity.ok(ordenes);
+		}
 	}
 
 	@GetMapping("/{id}")
@@ -65,7 +75,7 @@ public class OrdenController
 		}
 	}
 
-	@PutMapping("/{id}/update")
+	@PutMapping("/{id}")
 	public ResponseEntity<ResponseObject<Orden>> updateOrden(@PathVariable Long id, @RequestBody Orden updatedOrden) {
 		try{
 			Integer totalReparaciones = updatedOrden.getReparaciones().size();
@@ -78,6 +88,7 @@ public class OrdenController
 			}
 		}
 		catch(Exception err){
+			err.printStackTrace();
 			ResponseObject<Orden> response = new ResponseObject<Orden>(err.getMessage(), null);
 			return ResponseEntity.badRequest().body(response);
 		}

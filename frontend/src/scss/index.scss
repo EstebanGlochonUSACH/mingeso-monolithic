@@ -45,4 +45,11 @@ $card-bg: var(--bs-tertiary-bg);
 	}
 }
 
+.col-input-group {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+}
+
 @import "sidebar";

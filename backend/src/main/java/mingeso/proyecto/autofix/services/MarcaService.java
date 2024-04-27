@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import mingeso.proyecto.autofix.dtos.MarcaDTO;
 import mingeso.proyecto.autofix.entities.Marca;
-import mingeso.proyecto.autofix.models.MarcaDTO;
 import mingeso.proyecto.autofix.repositories.AutoRepository;
 import mingeso.proyecto.autofix.repositories.MarcaRepository;
 

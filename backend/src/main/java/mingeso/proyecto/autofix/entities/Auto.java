@@ -69,6 +69,10 @@ public class Auto
 		return id_auto;
 	}
 
+	public void setId(Long id_auto) {
+		this.id_auto = id_auto;
+	}
+
 	public String getPatente() {
 		return patente;
 	}

@@ -210,11 +210,6 @@ public class DatabaseSeeder implements CommandLineRunner
 		Marca marcaKia = marcaService.getOrCreateMarca("Kia");
 		Marca marcaChevrolet = marcaService.getOrCreateMarca("Chevrolet");
 
-		List<Bono> bonosToyota = bonoService.createBonos(marcaToyota, 70_000, 5);
-		List<Bono> bonosFord = bonoService.createBonos(marcaFord, 50_000, 2);
-		List<Bono> bonosHyundai = bonoService.createBonos(marcaHyundai, 30_000, 1);
-		List<Bono> bonosHonda = bonoService.createBonos(marcaHonda, 40_000, 7);
-
 		List<Auto> autos = new ArrayList<>();
 		createAutos(autos, marcaToyota, 40, "TOY");
 		createAutos(autos, marcaFord, 40, "FRD");
@@ -227,6 +222,11 @@ public class DatabaseSeeder implements CommandLineRunner
 		LocalDateTime now = LocalDateTime.now();
 		LocalDateTime firstDay = now.minusYears(1);
 		firstDay = LocalDateTime.of(firstDay.getYear(), 1, 1, firstDay.getHour(), firstDay.getMinute());
+
+		List<Bono> bonosToyota = null;
+		List<Bono> bonosFord = null;
+		List<Bono> bonosHyundai = null;
+		List<Bono> bonosHonda = null;
 
 		Auto auto;
 		Marca marca;
@@ -243,12 +243,12 @@ public class DatabaseSeeder implements CommandLineRunner
 				getRandomBetween(1, 59)
 			);
 
-			if(currentDay.getMonth() != lastMonth){
+			if(bonosToyota == null || bonosFord == null || bonosHyundai == null || bonosHonda == null || currentDay.getMonth() != lastMonth){
 				lastMonth = currentDay.getMonth();
-				bonosToyota = bonoService.createBonos(marcaToyota, 70_000, 5);
-				bonosFord = bonoService.createBonos(marcaFord, 50_000, 2);
-				bonosHyundai = bonoService.createBonos(marcaHyundai, 30_000, 1);
-				bonosHonda = bonoService.createBonos(marcaHonda, 40_000, 7);
+				bonosToyota = bonoService.createBonos(marcaToyota, 70_000, 5, currentDay);
+				bonosFord = bonoService.createBonos(marcaFord, 50_000, 2, currentDay);
+				bonosHyundai = bonoService.createBonos(marcaHyundai, 30_000, 1, currentDay);
+				bonosHonda = bonoService.createBonos(marcaHonda, 40_000, 7, currentDay);
 			}
 
 			bono = null;

@@ -37,7 +37,14 @@ public class OrdenService
 		if(auto != null){
 			return ordenRepository.findByAuto(auto, pageable);
 		}
-		return ordenRepository.findAll(pageable);
+		return ordenRepository.findAllSorted(pageable);
+	}
+
+	public Page<Orden> getAllOrdenesByPatente(String patente, Pageable pageable) {
+		if(patente != null){
+			return ordenRepository.findByAutoPatente(patente, pageable);
+		}
+		return ordenRepository.findAllSorted(pageable);
 	}
 
 	public Orden getOrdenById(Long id) {
@@ -79,135 +86,155 @@ public class OrdenService
 	@Transactional
 	public Orden updateOrden(Orden updatedOrden, Integer totalReparaciones) throws Exception {
 		Orden existingOrden = ordenRepository.findById(updatedOrden.getId()).orElse(null);
-		if (existingOrden != null) {
-			// Validar que el bono no este usado y que la orden no tenga bono
-			Auto auto = existingOrden.getAuto();
-			Bono bono = updatedOrden.getBono();
+		if (existingOrden == null) return null;
 
-			// Para reparaciones, descuentos y recargas
-			Auto.Tipo autoTipo = auto.getTipo();
-			Double descuento;
-			Long montoTmp;
-			Long montoReparaciones = updatedOrden.getMontoReparaciones();
-			Long montoTotal = montoReparaciones;
-			existingOrden.setMontoReparaciones(montoReparaciones);
+		// Validar que el bono no este usado y que la orden no tenga bono
+		Auto auto = existingOrden.getAuto();
+		Bono bono = bonoRepository.findById(updatedOrden.getBono().getId()).orElse(null);
 
-			// Bono
-			if(bono != null){
-				if(!bono.getMarca().equals(auto.getMarca())){
-					throw new Exception("No se puede registrar un bono de una Marca distinta a la del auto!");
+		// Para reparaciones, descuentos y recargas
+		Auto.Tipo autoTipo = auto.getTipo();
+		Double descuento;
+		Long montoTmp;
+		Long montoReparaciones = updatedOrden.getMontoReparaciones();
+		Long montoTotal = montoReparaciones;
+		existingOrden.setMontoReparaciones(montoReparaciones);
+
+		// Bono
+		if(bono != null){
+			// Checks
+			if(!bono.getMarca().equals(auto.getMarca())){
+				throw new Exception("No se puede registrar un bono de una Marca distinta a la del auto!");
+			}
+
+			// Clear existing bono (if any)
+			Bono existingBono = existingOrden.getBono();
+			if(existingBono != null && !existingBono.equals(bono)){
+				existingBono.setUsado(false);
+				bonoRepository.save(existingBono);
+				existingOrden.setBono(null);
+				existingBono = null;
+			}
+
+			// Add new bono
+			if(existingBono == null){
+				if(bono.getUsado()){
+					throw new Exception("No se puede registrar un bono que ya fue canjeado!");
 				}
-				else if(existingOrden.getBono() == null){
-					if(bono.getUsado()){
-						throw new Exception("No se puede registrar un bono que ya fue canjeado!");
-					}
-					bono.setUsado(true);
-					bonoRepository.save(bono);
-					existingOrden.setBono(bono);
+				bono.setUsado(true);
+				bonoRepository.save(bono);
+				existingOrden.setBono(bono);
+				if(montoReparaciones != null){
 					montoTotal -= bono.getMonto();
 				}
 			}
-
-			// Fechas
-			LocalDateTime fechaIngreso = updatedOrden.getFechaIngreso();
-			if(fechaIngreso == null){
-				fechaIngreso = existingOrden.getFechaIngreso();
+		}
+		else{
+			Bono existingBono = existingOrden.getBono();
+			if(existingBono != null){
+				existingBono.setUsado(false);
+				bonoRepository.save(existingBono);
+				existingOrden.setBono(null);
 			}
+		}
 
-			LocalDateTime fechaSalida = updatedOrden.getFechaSalida();
-			LocalDateTime fechaEntrega = updatedOrden.getFechaEntrega();
+		// Fechas
+		LocalDateTime fechaIngreso = updatedOrden.getFechaIngreso();
+		LocalDateTime fechaSalida = updatedOrden.getFechaSalida();
+		LocalDateTime fechaEntrega = updatedOrden.getFechaEntrega();
 
-			if(fechaEntrega != null && fechaSalida == null){
-				throw new Exception("No se puede registrar una fecha de entrega sin una fecha de salida!");
-			}
+		existingOrden.setFechaIngreso(fechaIngreso);
+		existingOrden.setFechaSalida(fechaSalida);
+		existingOrden.setFechaEntrega(fechaEntrega);
 
+		if(fechaIngreso == null){
+			fechaSalida = null;
+			fechaEntrega = null;
+			existingOrden.setFechaIngreso(null);
+			existingOrden.setFechaSalida(null);
+			existingOrden.setFechaEntrega(null);
+		}
+		else if(fechaSalida == null){
+			fechaEntrega = null;
 			existingOrden.setFechaIngreso(fechaIngreso);
-			existingOrden.setFechaSalida(fechaSalida);
-			existingOrden.setFechaEntrega(fechaEntrega);
+		}
 
-			// Descuento por dia de Atencion
-			if(montoReparaciones != null && fechaIngreso != null){
-				if(isSpecialDay(fechaIngreso)){
-					montoTmp = Math.round(montoReparaciones * 0.1);
-					existingOrden.setDescuentoDiaAtencion(montoTmp);
-					montoTotal -= montoTmp;
-				}
-				else{
-					existingOrden.setDescuentoDiaAtencion(null);
-				}
+		// Descuento por dia de Atencion
+		if(montoReparaciones != null && fechaIngreso != null){
+			if(isSpecialDay(fechaIngreso)){
+				montoTmp = Math.round(montoReparaciones * 0.1);
+				existingOrden.setDescuentoDiaAtencion(montoTmp);
+				montoTotal -= montoTmp;
 			}
 			else{
 				existingOrden.setDescuentoDiaAtencion(null);
 			}
-
-			// Descuento por reparaciones
-			if(montoReparaciones != null){
-				if(totalReparaciones > 0){
-					descuento = DescuentoReparacionesConfig.getDescuento(auto.getMotor(), totalReparaciones);
-					montoTmp = Math.round(montoReparaciones * descuento);
-					existingOrden.setDescuentoReparaciones(montoTmp);
-					montoTotal -= montoTmp;
-				}
-				else{
-					existingOrden.setDescuentoReparaciones(0L);
-				}
-			}
-			else{
-				existingOrden.setDescuentoReparaciones(null);
-			}
-
-			// Recarga por Antiguedad del auto
-			if(montoReparaciones != null){
-				Integer diff = fechaIngreso.getYear() - auto.getAnio();
-				if(diff > 0){
-					descuento = RecargoAntiguedadConfig.getRecargo(autoTipo, diff);
-					montoTmp = Math.round(montoReparaciones * descuento);
-					existingOrden.setRecargaAntiguedad(montoTmp);
-					montoTotal += montoTmp;
-				}
-				else{
-					existingOrden.setRecargaAntiguedad(0L);
-				}
-			}
-			else{
-				existingOrden.setRecargaAntiguedad(null);
-			}
-
-			// Recarga por kilometraje
-			if(montoReparaciones != null){
-				descuento = RecargoKilometrajeConfig.getRecargo(autoTipo, auto.getKilometraje());
-				montoTmp = Math.round(montoReparaciones * descuento);
-				existingOrden.setRecargaKilometraje(montoTmp);
-				montoTotal += montoTmp;
-			}
-			else{
-				existingOrden.setRecargaKilometraje(null);
-			}
-
-			// Recarga Atraso
-			if(montoReparaciones != null && fechaEntrega != null && fechaEntrega.isAfter(fechaSalida)){
-				Long days = Math.abs(ChronoUnit.DAYS.between(fechaEntrega, fechaSalida));
-				montoTmp = Math.round(RecargoAtrasoConfig.getRecargo(montoReparaciones, days));
-				existingOrden.setRecargaAtraso(montoTmp);
-				montoTotal += montoTmp;
-			}
-			else{
-				existingOrden.setRecargaAtraso(null);
-			}
-
-			// Calculo del IVA y total
-			if(montoReparaciones != null && fechaEntrega != null){
-				if(montoTotal < 0){
-					montoTotal = 0L;
-				}
-				existingOrden.setMontoTotal(montoTotal);
-				montoTmp = Math.round(montoTotal * IVA);
-				existingOrden.setValorIva(montoTmp);
-			}
-			
-			return ordenRepository.save(existingOrden);
 		}
-		return null;
+		else{
+			existingOrden.setDescuentoDiaAtencion(null);
+		}
+
+		// Descuento por reparaciones
+		if(montoReparaciones != null){
+			if(totalReparaciones > 0){
+				descuento = DescuentoReparacionesConfig.getDescuento(auto.getMotor(), totalReparaciones);
+				montoTmp = Math.round(montoReparaciones * descuento);
+				existingOrden.setDescuentoReparaciones(montoTmp);
+				montoTotal -= montoTmp;
+			}
+			else{
+				existingOrden.setDescuentoReparaciones(0L);
+			}
+		}
+		else{
+			existingOrden.setDescuentoReparaciones(null);
+		}
+
+		// Recarga por Antiguedad del auto
+		if(montoReparaciones != null && fechaIngreso != null){
+			Integer diff = fechaIngreso.getYear() - auto.getAnio();
+			descuento = RecargoAntiguedadConfig.getRecargo(autoTipo, diff);
+			montoTmp = Math.round(montoReparaciones * descuento);
+			existingOrden.setRecargaAntiguedad(montoTmp);
+			montoTotal += montoTmp;
+		}
+		else{
+			existingOrden.setRecargaAntiguedad(null);
+		}
+
+		// Recarga por kilometraje
+		if(montoReparaciones != null){
+			descuento = RecargoKilometrajeConfig.getRecargo(autoTipo, auto.getKilometraje());
+			montoTmp = Math.round(montoReparaciones * descuento);
+			existingOrden.setRecargaKilometraje(montoTmp);
+			montoTotal += montoTmp;
+		}
+		else{
+			existingOrden.setRecargaKilometraje(null);
+		}
+
+		// Recarga Atraso
+		if(montoReparaciones != null && fechaEntrega != null && fechaEntrega.isAfter(fechaSalida)){
+			Long days = Math.abs(ChronoUnit.DAYS.between(fechaEntrega, fechaSalida));
+			montoTmp = Math.round(RecargoAtrasoConfig.getRecargo(montoReparaciones, days));
+			existingOrden.setRecargaAtraso(montoTmp);
+			montoTotal += montoTmp;
+		}
+		else{
+			existingOrden.setRecargaAtraso(null);
+		}
+
+		// Calculo del IVA y total
+		if(montoReparaciones != null && fechaEntrega != null){
+			if(montoTotal < 0){
+				montoTotal = 0L;
+			}
+			existingOrden.setMontoTotal(montoTotal);
+			montoTmp = Math.round(montoTotal * IVA);
+			existingOrden.setValorIva(montoTmp);
+		}
+		
+		return ordenRepository.save(existingOrden);
 	}
 
 	public void deleteOrden(Long id) {

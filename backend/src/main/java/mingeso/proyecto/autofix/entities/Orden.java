@@ -24,11 +24,11 @@ public class Orden
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_auto")
-	public Auto auto;
+	private Auto auto;
 
 	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_bono", nullable = true)
-	public Bono bono;
+	private Bono bono;
 
 	@Column(name = "monto_reparaciones", nullable = true)
 	private Long montoReparaciones;
@@ -86,6 +86,10 @@ public class Orden
 
 	public Long getId(){
 		return id_orden;
+	}
+
+	public void setId(Long id_orden){
+		this.id_orden = id_orden;
 	}
 
 	public Long getMontoReparaciones(){
@@ -152,12 +156,12 @@ public class Orden
 		this.recargaAtraso = recargaAtraso;
 	}
 
-	public void setValorIva(Long valorIva){
-		this.valorIva = valorIva;
-	}
-
 	public Long getValorIva(){
 		return valorIva;
+	}
+
+	public void setValorIva(Long valorIva){
+		this.valorIva = valorIva;
 	}
 
 	public void setMontoTotal(Long montoTotal){
@@ -166,10 +170,6 @@ public class Orden
 
 	public Long getMontoTotal(){
 		return montoTotal;
-	}
-
-	public List<Reparacion> getReparaciones() {
-		return reparaciones;
 	}
 
 	public LocalDateTime getFechaIngreso(){
@@ -194,5 +194,9 @@ public class Orden
 
 	public void setFechaEntrega(LocalDateTime fechaEntrega){
 		this.fechaEntrega = fechaEntrega;
+	}
+
+	public List<Reparacion> getReparaciones() {
+		return reparaciones;
 	}
 }

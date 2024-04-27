@@ -3,8 +3,9 @@ import { useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWrench } from '@fortawesome/free-solid-svg-icons/faWrench';
 import { faCarSide } from '@fortawesome/free-solid-svg-icons/faCarSide';
-import { faQuestion } from '@fortawesome/free-solid-svg-icons/faQuestion';
+import { faFileLines } from '@fortawesome/free-solid-svg-icons/faFileLines';
 import { faCopyright } from '@fortawesome/free-solid-svg-icons/faCopyright';
+import { faTag } from '@fortawesome/free-solid-svg-icons/faTag';
 import Nav from 'react-bootstrap/Nav';
 
 const Sidebar: FC = () => {
@@ -20,7 +21,10 @@ const Sidebar: FC = () => {
 						<div className="nav-icon"><FontAwesomeIcon icon={faCarSide} /></div> Autos
 					</Nav.Link>
 					<Nav.Link eventKey="/ordenes" href="/ordenes">
-						<div className="nav-icon"><FontAwesomeIcon icon={faQuestion} /></div> Ordenes
+						<div className="nav-icon"><FontAwesomeIcon icon={faFileLines} /></div> Ordenes
+					</Nav.Link>
+					<Nav.Link eventKey="/bonos" href="/bonos">
+						<div className="nav-icon"><FontAwesomeIcon icon={faTag} /></div> Bonos
 					</Nav.Link>
 					<Nav.Link eventKey="/marcas" href="/marcas">
 						<div className="nav-icon"><FontAwesomeIcon icon={faCopyright} /></div> Marcas

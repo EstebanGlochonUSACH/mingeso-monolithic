@@ -50,12 +50,24 @@ public class Bono
 		return id_bono;
 	}
 
+	public void setId(Long id_bono){
+		this.id_bono = id_bono;
+	}
+
 	public Marca getMarca(){
 		return marca;
 	}
 
+	public void setMarca(Marca marca){
+		this.marca = marca;
+	}
+
 	public Integer getMonto(){
 		return monto;
+	}
+
+	public void setMonto(Integer monto){
+		this.monto = monto;
 	}
 
 	public Boolean getUsado(){
@@ -70,7 +82,15 @@ public class Bono
 		return fechaInicio;
 	}
 
+	public void setFechaInicio(LocalDateTime fechaInicio){
+		this.fechaInicio = fechaInicio;
+	}
+
 	public LocalDateTime getFechaTermino(){
 		return fechaTermino;
+	}
+
+	public void setFechaTermino(LocalDateTime fechaTermino){
+		this.fechaTermino = fechaTermino;
 	}
 }

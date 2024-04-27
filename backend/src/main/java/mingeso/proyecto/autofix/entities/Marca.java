@@ -29,6 +29,10 @@ public class Marca
 		return id_marca;
 	}
 
+	public void setId(Long id_marca){
+		this.id_marca = id_marca;
+	}
+
 	public String getNombre(){
 		return nombre;
 	}
