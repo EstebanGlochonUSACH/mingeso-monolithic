@@ -1,7 +1,7 @@
 pipeline{
     agent any
     stages{
-        stage("Build and Push Docker Image (frontend)"){
+        stage("Build and Push Docker Image"){
             steps{
                 checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/EstebanGlochonUSACH/mingeso-monolithic', credentialsId: 'git-ssh-credentials']])
                 dir("frontend"){
