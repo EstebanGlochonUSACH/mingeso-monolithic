@@ -16,14 +16,11 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: wkBsT1WyPxAEAzS9
       POSTGRES_DB: autofix
-    ports:
-      - 5435:5432
   # Backend & Frontend
   backend:
     image: estebanglochon/autofix-monolothic-backend
-    ports:
-      - 8091:8090
     environment:
+      SERVER_PORT: 8090
       DB_HOST: autofix-postgres
       DB_PORT: 5432
       DB_USERNAME: postgres
@@ -42,8 +39,6 @@ services:
       - postgres
   frontend:
     image: estebanglochon/autofix-monolothic-frontend
-    ports:
-      - 3001:3000
     networks:
       - autofix-network
     deploy:
