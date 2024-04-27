@@ -21,4 +21,5 @@ WORKDIR /app
 COPY --from=builder /app/target/*.jar /app/app.jar
 
 # Run the compiled Spring Boot application
+ENV SERVER_PORT=8080
 CMD ["java", "-jar", "/app/app.jar"]
