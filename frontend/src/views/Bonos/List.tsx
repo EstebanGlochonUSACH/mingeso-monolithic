@@ -149,7 +149,7 @@ const ListBonos: FC = () => {
 								</tr>
 							</thead>
 							<tbody>
-							{(state.bonos.length == 0) ? (
+							{(state.bonos.length === 0) ? (
 								<tr>
 									<td colSpan={5} className="text-center fst-italic p-4">
 										No hay bonos...

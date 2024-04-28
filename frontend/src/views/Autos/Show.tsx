@@ -131,7 +131,7 @@ const ShowAuto: FC = () => {
 					</Card.Body>
 				):((state.auto === null) ? (
 					<Card.Body className="text-center fst-italic p-5">
-						<FontAwesomeIcon icon={faWarning} /> Ocurri&oacute; un error
+						<FontAwesomeIcon icon={faWarning} /> No hay datos
 					</Card.Body>
 				):(
 					<Card.Body>

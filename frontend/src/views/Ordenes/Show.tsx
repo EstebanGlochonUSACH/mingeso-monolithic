@@ -248,7 +248,7 @@ const ShowOrden: FC = () => {
 					</Card.Body>
 				):((state.orden === null) ? (
 					<Card.Body className="text-center fst-italic p-5">
-						<FontAwesomeIcon icon={faWarning} /> Ocurri&oacute; un error
+						<FontAwesomeIcon icon={faWarning} /> No hay datos
 					</Card.Body>
 				):(
 					<Card.Body>
@@ -282,7 +282,7 @@ const ShowOrden: FC = () => {
 										type="datetime-local"
 										value={state.orden.fechaIngreso || undefined}
 										onChange={handleChangeFechaIngreso}
-										disabled={state.updateLoading || state.orden.reparaciones.length == 0}
+										disabled={state.updateLoading || state.orden.reparaciones.length === 0}
 									/>
 								</InputGroup>
 							</Col>

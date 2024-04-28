@@ -220,6 +220,8 @@ const ListAutos: FC = () => {
 					<Card.Body className="text-center fst-italic p-5">
 						<FontAwesomeIcon icon={faWarning} /> Ocurri&oacute; un error
 					</Card.Body>
+				):((state.autos.numberOfElements === 0) ? (
+					<Card.Body className="text-center fst-italic p-4">No hay datos</Card.Body>
 				):(
 					<Card.Body>
 						<Table striped bordered hover>
@@ -264,7 +266,7 @@ const ListAutos: FC = () => {
 							</Pagination>
 						</div>
 					</Card.Body>
-				)))}
+				))))}
 			</Card>
 		</Container>
 	);

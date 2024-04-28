@@ -99,7 +99,7 @@ const DropdownReparaciones: FC<DropdownReparacionesProps> = ({ loading, orden, r
 		<Dropdown drop="start" onSelect={handleSelect}>
 			<Dropdown.Toggle
 				id="add-reparacion"
-				disabled={state.loading || loading}
+				disabled={state.loading || loading || state.filtered.length == 0}
 			>
 				Agregar Reparación
 			</Dropdown.Toggle>

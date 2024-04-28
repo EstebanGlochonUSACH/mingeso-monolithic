@@ -41,17 +41,23 @@ const ListMarcas: FC = () => {
 								</tr>
 							</thead>
 							<tbody>
-								{marcas.map(marca => (
-									<tr key={marca.id}>
-										<td width="70%">{marca.nombre}</td>
-										<td width="30%">{marca.totalAutos || 0}</td>
-										<td className="min-width-cell" align="center">
-											<Button size="sm" onClick={() => handleRemove(marca)}>
-												<FontAwesomeIcon icon={faXmark} />
-											</Button>
-										</td>
+								{(marcas.length === 0) ? (
+									<tr>
+										<td colSpan={3} className="text-center fst-italic p-4">No hay datos</td>
 									</tr>
-								))}
+								):(
+									marcas.map(marca => (
+										<tr key={marca.id}>
+											<td width="70%">{marca.nombre}</td>
+											<td width="30%">{marca.totalAutos || 0}</td>
+											<td className="min-width-cell" align="center">
+												<Button size="sm" onClick={() => handleRemove(marca)}>
+													<FontAwesomeIcon icon={faXmark} />
+												</Button>
+											</td>
+										</tr>
+									))
+								)}
 							</tbody>
 						</Table>
 						<Form onSubmit={handleSubmit}>
