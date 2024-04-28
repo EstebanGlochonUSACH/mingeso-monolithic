@@ -1,6 +1,5 @@
 package mingeso.proyecto.autofix.entities;
 
-import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,13 +39,4 @@ public class Marca
 	public void setNombre(String nombre){
 		this.nombre = nombre;
 	}
-
-	@Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Marca marca = (Marca)o;
-        return Objects.equals(id_marca, marca.id_marca);
-    }
-
 }

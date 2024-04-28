@@ -14,7 +14,7 @@ import mingeso.proyecto.autofix.entities.Marca;
 public interface AutoRepository extends JpaRepository<Auto, Long>
 {
 	@Query("SELECT a FROM Auto a WHERE :patente IS NULL OR a.patente LIKE %:patente%")
-	public Page<Auto> findAll(@Param("patente") String patente, Pageable pageable);
+	public Page<Auto> findAllMatchPatente(@Param("patente") String patente, Pageable pageable);
 
 	public Optional<Auto> findByPatente(String patente);
 

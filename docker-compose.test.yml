@@ -1,0 +1,15 @@
+version: '3.9'
+services:
+  backend-test:
+    build:
+      context: backend
+      dockerfile: Dockerfile.test
+    environment:
+      TZ: America/Santiago
+      SEEDER_ENABLED: "false"
+      POSTGRES_URL: jdbc:postgresql://localhost:5432/autofix
+      POSTGRES_USER: postgres
+      POSTGRES_PASS: postgres
+      SERVER_PORT: 8080
+    volumes:
+      - ./backend/src:/app/src

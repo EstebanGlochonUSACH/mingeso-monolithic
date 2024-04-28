@@ -16,20 +16,20 @@ public interface OrdenRepository extends JpaRepository<Orden, Long>
 {
 	public Page<Orden> findAll(Pageable pageable);
 
-    @Query("SELECT o FROM Orden o ORDER BY o.fechaIngreso ASC")
-    public Page<Orden> findAllSorted(Pageable pageable);
+	@Query("SELECT o FROM Orden o ORDER BY o.fechaIngreso ASC")
+	public Page<Orden> findAllSorted(Pageable pageable);
 
 	@Query("SELECT o FROM Orden o WHERE o.auto.patente LIKE %:patente% ORDER BY o.fechaIngreso ASC")
-    public Page<Orden> findByAutoPatente(@Param("patente") String patente, Pageable pageable);
+	public Page<Orden> findByAutoPatente(@Param("patente") String patente, Pageable pageable);
 
 	public Page<Orden> findByAuto(Auto auto, Pageable pageable);
 
-    @Query("SELECT new mingeso.proyecto.autofix.dtos.AvgRepairTimeByMarcaDTO(" +
-           "o.auto.marca.nombre, " +
-           "AVG(TIMESTAMPDIFF(SECOND, o.fechaIngreso, o.fechaSalida))) " +
-           "FROM Orden o " +
-           "WHERE o.fechaSalida IS NOT NULL " +
-           "GROUP BY o.auto.marca.nombre " +
-           "ORDER BY AVG(TIMESTAMPDIFF(SECOND, o.fechaIngreso, o.fechaSalida)) ASC")
-    public List<AvgRepairTimeByMarcaDTO> findAvgRepairTimeByMarca();
+	@Query("SELECT new mingeso.proyecto.autofix.dtos.AvgRepairTimeByMarcaDTO(" +
+		   "o.auto.marca.nombre, " +
+		   "AVG(TIMESTAMPDIFF(SECOND, o.fechaIngreso, o.fechaSalida))) " +
+		   "FROM Orden o " +
+		   "WHERE o.fechaSalida IS NOT NULL " +
+		   "GROUP BY o.auto.marca.nombre " +
+		   "ORDER BY AVG(TIMESTAMPDIFF(SECOND, o.fechaIngreso, o.fechaSalida)) ASC")
+	public List<AvgRepairTimeByMarcaDTO> findAvgRepairTimeByMarca();
 }

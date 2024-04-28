@@ -15,6 +15,7 @@ import mingeso.proyecto.autofix.config.RecargoAtrasoConfig;
 import mingeso.proyecto.autofix.config.RecargoKilometrajeConfig;
 import mingeso.proyecto.autofix.entities.Auto;
 import mingeso.proyecto.autofix.entities.Bono;
+import mingeso.proyecto.autofix.entities.Marca;
 import mingeso.proyecto.autofix.entities.Orden;
 import mingeso.proyecto.autofix.repositories.BonoRepository;
 import mingeso.proyecto.autofix.repositories.OrdenRepository;
@@ -67,7 +68,8 @@ public class OrdenService
 		Auto auto = orden.getAuto();
 		Bono bono = orden.getBono();
 		if(bono != null){
-			if(!bono.getMarca().equals(auto.getMarca())){
+			Marca marca = bono.getMarca();
+			if(marca != null && !marca.equals(auto.getMarca())){
 				throw new Exception("No se puede registrar un bono de una Marca distinta a la del auto!");
 			}
 			else if(bono.getUsado()){
@@ -90,6 +92,10 @@ public class OrdenService
 
 		// Validar que el bono no este usado y que la orden no tenga bono
 		Auto auto = existingOrden.getAuto();
+		if(auto == null){
+			throw new Exception("La orden no tiene auto!");
+		}
+
 		Bono updatedBono = updatedOrden.getBono();
 		Bono bono = null;
 		if(updatedBono != null){
@@ -107,7 +113,8 @@ public class OrdenService
 		// Bono
 		if(bono != null){
 			// Checks
-			if(!bono.getMarca().equals(auto.getMarca())){
+			Marca marca = bono.getMarca();
+			if(marca != null && !marca.equals(auto.getMarca())){
 				throw new Exception("No se puede registrar un bono de una Marca distinta a la del auto!");
 			}
 

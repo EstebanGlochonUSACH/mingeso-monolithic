@@ -140,9 +140,4 @@ public class Auto
 	public void setKilometraje(Integer kilometraje) {
 		this.kilometraje = kilometraje;
 	}
-
-	@Override
-	public String toString() {
-		return String.format("Auto[id=%d, patente='%s']", id_auto, patente);
-	}
 }

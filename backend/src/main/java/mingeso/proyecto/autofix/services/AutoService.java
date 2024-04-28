@@ -18,7 +18,7 @@ public class AutoService
 	}
 
 	public Page<Auto> getAllAutos(String patente, Pageable pageable) {
-		return autoRepository.findAll(patente, pageable);
+		return autoRepository.findAllMatchPatente(patente, pageable);
 	}
 
 	public Auto getAutoById(Long id) {
@@ -27,10 +27,6 @@ public class AutoService
 
 	public Auto getAutoByPatente(String patente) {
 		return autoRepository.findByPatente(patente).orElse(null);
-	}
-
-	public Boolean existsByPatente(String patente) {
-		return autoRepository.existsByPatente(patente);
 	}
 
 	public Auto saveAuto(Auto auto) {

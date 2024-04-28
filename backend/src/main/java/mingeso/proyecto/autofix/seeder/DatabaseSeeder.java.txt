@@ -78,7 +78,7 @@ public class DatabaseSeeder implements CommandLineRunner
 
 	@Override
 	public void run(String... args) throws Exception {
-		seedData();
+		seedDatabase();
 	}
 
 	private static Integer getRandomBetween(Integer first, Integer last) {
@@ -201,7 +201,7 @@ public class DatabaseSeeder implements CommandLineRunner
 		return orden;
 	}
 
-	private void seedData() throws Exception {
+	private void seedDatabase() throws Exception {
 		// Registrar Marcas
 		Marca marcaToyota = marcaService.getOrCreateMarca("Toyota");
 		Marca marcaFord = marcaService.getOrCreateMarca("Ford");

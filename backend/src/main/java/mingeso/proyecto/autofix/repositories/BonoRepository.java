@@ -13,19 +13,19 @@ import mingeso.proyecto.autofix.dtos.BonoGroupedByFechaInicioDTO;
 @Repository
 public interface BonoRepository extends JpaRepository<Bono, Long>
 {
-    @Query("SELECT new mingeso.proyecto.autofix.dtos.BonoGroupedByFechaInicioDTO(b.marca, b.monto, b.fechaInicio, b.fechaTermino, COUNT(b)) " +
-           "FROM Bono b GROUP BY b.marca, b.monto, b.fechaInicio, b.fechaTermino " +
-           "ORDER BY b.fechaInicio DESC")
-    public List<BonoGroupedByFechaInicioDTO> groupByFechaInicio();
+	@Query("SELECT new mingeso.proyecto.autofix.dtos.BonoGroupedByFechaInicioDTO(b.marca, b.monto, b.fechaInicio, b.fechaTermino, COUNT(b)) " +
+		   "FROM Bono b GROUP BY b.marca, b.monto, b.fechaInicio, b.fechaTermino " +
+		   "ORDER BY b.fechaInicio DESC")
+	public List<BonoGroupedByFechaInicioDTO> groupByFechaInicio();
 
-    @Query("SELECT b FROM Bono b WHERE b.marca = :marca AND b.usado IS FALSE")
-    List<Bono> findAllByMarca(Marca marca);
+	@Query("SELECT b FROM Bono b WHERE b.marca = :marca AND b.usado IS FALSE")
+	List<Bono> findAllByMarca(Marca marca);
 
-    @Query("SELECT b FROM Bono b WHERE b.marca = :marca " +
-           "AND (b.fechaInicio <= :fecha AND b.fechaTermino >= :fecha) " +
-           "AND b.usado IS FALSE")
-    List<Bono> findAllByMarcaAndFecha(
-        @Param("marca") Marca marca,
-        @Param("fecha") LocalDateTime fecha
-    );
+	@Query("SELECT b FROM Bono b WHERE b.marca = :marca " +
+		   "AND (b.fechaInicio <= COALESCE(:fecha, CURRENT_DATE) AND b.fechaTermino >= COALESCE(:fecha, CURRENT_DATE)) " +
+		   "AND b.usado IS FALSE")
+	List<Bono> findAllByMarcaAndFecha(
+		@Param("marca") Marca marca,
+		@Param("fecha") LocalDateTime fecha
+	);
 }

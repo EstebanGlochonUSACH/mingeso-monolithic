@@ -27,13 +27,7 @@ public class BonoService
 
 	public List<Bono> getFilteredBono(Marca marca, LocalDateTime fecha) {
 		if (marca != null) {
-			if(fecha != null){
-				return bonoRepository.findAllByMarcaAndFecha(marca, fecha);
-			}
-			else{
-				LocalDateTime now = LocalDateTime.now();
-				return bonoRepository.findAllByMarcaAndFecha(marca, now);
-			}
+			return bonoRepository.findAllByMarcaAndFecha(marca, fecha);
 		}
 		else {
 			return bonoRepository.findAll();

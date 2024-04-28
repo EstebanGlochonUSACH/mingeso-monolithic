@@ -34,19 +34,17 @@ public class OrdenController
 		@RequestParam(required = false) Long auto,
 		@RequestParam(required = false) String patente
 	) {
+		Pageable pageable = PageRequest.of(page, limit);
 		if(auto != null){
 			Auto autoEntity = autoService.getAutoById(auto);
-			Pageable pageable = PageRequest.of(page, limit);
 			Page<Orden> ordenes = ordenService.getAllOrdenes(autoEntity, pageable);
 			return ResponseEntity.ok(ordenes);
 		}
 		else if(patente != null){
-			Pageable pageable = PageRequest.of(page, limit);
 			Page<Orden> ordenes = ordenService.getAllOrdenesByPatente(patente, pageable);
 			return ResponseEntity.ok(ordenes);
 		}
 		else{
-			Pageable pageable = PageRequest.of(page, limit);
 			Page<Orden> ordenes = ordenService.getAllOrdenes(null, pageable);
 			return ResponseEntity.ok(ordenes);
 		}
