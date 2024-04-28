@@ -50,6 +50,19 @@ public class ReparacionService
 		return reparacionRepository.findById(id).orElse(null);
 	}
 
+	private Orden actualizarOrden(Long ordenId) throws Exception {
+		Orden orden = ordenService.getOrdenById(ordenId);
+		if(orden == null) return orden;
+		Long montoReparaciones = 0L;
+		Integer totalReparaciones = 0;
+		for(Reparacion rep : orden.getReparaciones()){
+			totalReparaciones += 1;
+			montoReparaciones += rep.getMonto();
+		}
+		orden.setMontoReparaciones(montoReparaciones);
+		return ordenService.updateOrden(orden, totalReparaciones);
+	}
+
 	public Orden createReparacion(Reparacion reparacion) throws Exception {
 		// Definir bien el monto
 		Orden orden = reparacion.getOrden();
@@ -60,19 +73,9 @@ public class ReparacionService
 		Auto auto = orden.getAuto();
 		Integer monto = MontoReparacionConfig.getMonto(auto.getMotor(), reparacion.getTipo());
 		reparacion.setMonto(monto);
-		reparacionRepository.save(reparacion);
+		reparacion = reparacionRepository.save(reparacion);
 
-		// Actualizar orden
-		orden = ordenService.getOrdenById(orden.getId());
-		Long montoReparaciones = 0L;
-		Integer totalReparaciones = 0;
-		for(Reparacion rep : orden.getReparaciones()){
-			totalReparaciones += 1;
-			montoReparaciones += rep.getMonto();
-		}
-		orden.setMontoReparaciones(montoReparaciones);
-		ordenService.updateOrden(orden, totalReparaciones);
-		return orden;
+		return actualizarOrden(orden.getId());
 	}
 
 	public Reparacion updateReparacion(Reparacion updatedReparacion) {
@@ -85,7 +88,19 @@ public class ReparacionService
 		return null;
 	}
 
-	public void deleteReparacion(Long id) {
+	public Orden deleteReparacion(Long id) throws Exception {
+		Reparacion reparacion = reparacionRepository.findById(id).orElse(null);
+		if(reparacion == null) return null;
+
+		// Definir bien el monto
+		Orden orden = reparacion.getOrden();
+		if(orden == null){
+			throw new Exception("La reparacion no tiene \"orden\".");
+		}
+
+		// Eliminar reparacion
 		reparacionRepository.deleteById(id);
+
+		return actualizarOrden(orden.getId());
 	}
 }

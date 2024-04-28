@@ -27,6 +27,7 @@ services:
       POSTGRES_URL: jdbc:postgresql://postgres:5432/autofix
       POSTGRES_USER: postgres
       POSTGRES_PASS: wkBsT1WyPxAEAzS9
+      SERVER_PORT: 8080
     volumes:
       - ./backend/src:/app/src
     depends_on:

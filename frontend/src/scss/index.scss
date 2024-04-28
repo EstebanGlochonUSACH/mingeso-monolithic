@@ -52,4 +52,10 @@ $card-bg: var(--bs-tertiary-bg);
     align-items: stretch;
 }
 
+.reparacion-row-grid {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	gap: 1rem;
+}
+
 @import "sidebar";

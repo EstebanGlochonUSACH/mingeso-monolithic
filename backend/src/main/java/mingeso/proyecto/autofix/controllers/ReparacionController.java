@@ -72,8 +72,8 @@ public class ReparacionController
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deleteReparacion(@PathVariable Long id) {
-		reparacionService.deleteReparacion(id);
-		return ResponseEntity.noContent().build();
+	public ResponseEntity<Orden> deleteReparacion(@PathVariable Long id) throws Exception {
+		Orden orden = reparacionService.deleteReparacion(id);
+		return ResponseEntity.ok(orden);
 	}
 }

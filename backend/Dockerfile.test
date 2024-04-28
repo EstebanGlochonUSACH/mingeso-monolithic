@@ -7,3 +7,6 @@ RUN ./mvnw dependency:go-offline
  
 COPY src ./src
 CMD [ "./mvnw", "test", "-Dspring.profiles.active=test" ]
+# CMD [ "./mvnw", "test", "-Dspring.profiles.active=test", "-Dtest=ReparacionControllerTest#testDeleteReparacion" 
+# mvn test -Dtest=MySpecificTest
+# mvn test -Dtest=TestClass1,TestClass2]

@@ -5,16 +5,42 @@ import { numberWithCommas } from "../utils/utils";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faScrewdriverWrench } from '@fortawesome/free-solid-svg-icons/faScrewdriverWrench';
 import Table from 'react-bootstrap/Table';
+import Button from "react-bootstrap/Button";
 
-const ReparacionRow: FC<{ reparacion: Reparacion }> = ({ reparacion }) => {
+interface ReparacionRowProps {
+	reparacion: Reparacion,
+	deletable?: boolean,
+	onDelete?: (reparacion: Reparacion) => void,
+};
+
+const ReparacionRow: FC<ReparacionRowProps> = ({ reparacion, deletable = false, onDelete }) => {
 	const detail = getReparacionDetail(reparacion.tipo);
+	const handleDelete = () => {
+		if(deletable && onDelete) onDelete(reparacion);
+	};
 	return (
 		<tr >
 			<td>
-				<div>
-					<span className="me-2"><FontAwesomeIcon icon={faScrewdriverWrench} /></span> {detail.label}
-				</div>
-				<div className="fs-small opacity-50">{detail.description}</div>
+				{deletable ? (
+					<div className="reparacion-row-grid">
+						<div>
+							<div>
+								<span className="me-2"><FontAwesomeIcon icon={faScrewdriverWrench} /></span> {detail.label}
+							</div>
+							<div className="fs-small opacity-50">{detail.description}</div>
+						</div>
+						<div>
+							<Button size="sm" onClick={handleDelete}>Eliminar</Button>
+						</div>
+					</div>
+				):(
+					<>
+						<div>
+							<span className="me-2"><FontAwesomeIcon icon={faScrewdriverWrench} /></span> {detail.label}
+						</div>
+						<div className="fs-small opacity-50">{detail.description}</div>
+					</>
+				)}
 			</td>
 			<td align="right">+{numberWithCommas(reparacion.monto)}</td>
 		</tr>
@@ -24,9 +50,11 @@ const ReparacionRow: FC<{ reparacion: Reparacion }> = ({ reparacion }) => {
 interface TablaReparacionesProps {
 	orden: Orden,
 	reparaciones: Reparacion[],
+	deletable?: boolean,
+	onDelete?: (reparacion: Reparacion) => void,
 };
 
-const TablaReparaciones: FC<TablaReparacionesProps> = ({ orden, reparaciones }) => {
+const TablaReparaciones: FC<TablaReparacionesProps> = ({ orden, reparaciones, deletable = false, onDelete }) => {
 	return (
 		<Table bordered className="mt-3">
 			<thead>
@@ -38,7 +66,12 @@ const TablaReparaciones: FC<TablaReparacionesProps> = ({ orden, reparaciones }) 
 			<tbody>
 				{(reparaciones.length > 0) ? (
 					reparaciones.map((reparacion, index) => (
-						<ReparacionRow key={index} reparacion={reparacion} />
+						<ReparacionRow
+							key={index}
+							reparacion={reparacion}
+							deletable={deletable}
+							onDelete={onDelete}
+						/>
 					))
 				):(
 					<tr>

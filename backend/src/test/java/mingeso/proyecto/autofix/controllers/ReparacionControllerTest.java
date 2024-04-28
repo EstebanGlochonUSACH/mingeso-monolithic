@@ -142,11 +142,23 @@ public class ReparacionControllerTest {
 
     @Test
     public void testDeleteReparacion() throws Exception {
-        doNothing().when(reparacionService).deleteReparacion(1L);
+        Long reparacionId = 1L;
 
-        mockMvc.perform(delete("/reparaciones/1"))
-                .andExpect(status().isNoContent());
+        // Prepare the mock response
+        Orden expectedOrden = new Orden();
+        expectedOrden.setId(1L);
 
-        verify(reparacionService, times(1)).deleteReparacion(1L);
+        // Mock the required service interaction
+        when(reparacionService.deleteReparacion(reparacionId))
+            .thenReturn(expectedOrden);
+
+        // Perform a DELETE request and validate the response
+        mockMvc.perform(delete("/reparaciones/{id}", reparacionId)
+                .contentType(MediaType.APPLICATION_JSON)) // Content type for the request
+            .andExpect(status().isOk()) // Expect HTTP 200 (OK)
+            .andExpect(jsonPath("$.id").value(1L));
+
+        // Verify that the service was called once with the expected ID
+        verify(reparacionService, times(1)).deleteReparacion(eq(reparacionId));
     }
 }
