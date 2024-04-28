@@ -8,15 +8,21 @@ import ViewReporte3 from "./Reporte3";
 
 const DEFAULT_ROUTE = 'reparaciones-tipo-auto';
 
+const routes = [
+	'reparaciones-tipo-auto',
+	'tiempo-reparacion',
+	'reparaciones-tipo-motor',
+];
+
 function createDefaultState(location: Location){
 	const path = location.pathname.split('/').pop();
-	return path || DEFAULT_ROUTE;
+	return (path && routes.includes(path)) ? path : DEFAULT_ROUTE;
 }
 
 const RouterReportes: FC = () => {
 	const location = useLocation();
 	const navigate = useNavigate();
-	const [tab, setTab] = useState<string|null>(createDefaultState(location));
+	const [tab, setTab] = useState<string>(createDefaultState(location));
 	const handleSelectTab = (eventKey: string|null) => {
 		if(eventKey){
 			setTab(eventKey);
@@ -25,9 +31,9 @@ const RouterReportes: FC = () => {
 	};
 	return (
 		<Container className="py-2">
-			<Nav className="mb-2" variant="pills" activeKey={tab || DEFAULT_ROUTE} onSelect={handleSelectTab}>
+			<Nav className="mb-2" variant="pills" activeKey={tab} onSelect={handleSelectTab}>
 				<Nav.Item>
-					<Nav.Link eventKey={DEFAULT_ROUTE}>Reparaciones / Tipo Auto</Nav.Link>
+					<Nav.Link eventKey="reparaciones-tipo-auto">Reparaciones / Tipo Auto</Nav.Link>
 				</Nav.Item>
 				<Nav.Item>
 					<Nav.Link eventKey="tiempo-reparacion">Tiempos de Reparaci&oacute;n</Nav.Link>
