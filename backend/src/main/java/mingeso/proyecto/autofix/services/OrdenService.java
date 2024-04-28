@@ -90,7 +90,11 @@ public class OrdenService
 
 		// Validar que el bono no este usado y que la orden no tenga bono
 		Auto auto = existingOrden.getAuto();
-		Bono bono = bonoRepository.findById(updatedOrden.getBono().getId()).orElse(null);
+		Bono updatedBono = updatedOrden.getBono();
+		Bono bono = null;
+		if(updatedBono != null){
+			bono = bonoRepository.findById(updatedBono.getId()).orElse(null);
+		}
 
 		// Para reparaciones, descuentos y recargas
 		Auto.Tipo autoTipo = auto.getTipo();

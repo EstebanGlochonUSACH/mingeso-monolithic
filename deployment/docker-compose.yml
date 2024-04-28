@@ -22,7 +22,7 @@ services:
     environment:
       SERVER_PORT: 8090
       TZ: America/Santiago
-      SEEDER_ENABLED: "true"
+      SEEDER_ENABLED: "false"
       POSTGRES_URL: jdbc:postgresql://autofix-postgres:5432/autofix
       POSTGRES_USER: postgres
       POSTGRES_PASS: wkBsT1WyPxAEAzS9
