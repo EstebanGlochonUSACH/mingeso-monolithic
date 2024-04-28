@@ -3,7 +3,7 @@ pipeline{
     stages{
         stage("Build and Push Docker Image"){
             steps{
-                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'git@github.com:EstebanGlochonUSACH/mingeso-monolithic.git', credentialsId: 'git-ssh-credentials']])
+                // checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'git@github.com:EstebanGlochonUSACH/mingeso-monolithic.git', credentialsId: 'git-ssh-credentials']])
                 dir("frontend"){
                     script{
                         withDockerRegistry(credentialsId: 'docker-credentials'){
