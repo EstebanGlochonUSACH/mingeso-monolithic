@@ -191,7 +191,7 @@ const ListAutos: FC = () => {
 				<Card.Header className="d-flex justify-content-between align-items-center p-2 ps-3">
 					<div>Lista de Autos</div>
 					<Button href="/auto/create">
-						<FontAwesomeIcon icon={faSquarePlus} /> Registrar Vehículo
+						<FontAwesomeIcon icon={faSquarePlus} /> Registrar Nuevo Vehículo
 					</Button>
 				</Card.Header>
 				<Card.Header className="p-2">
